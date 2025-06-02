@@ -12,6 +12,11 @@ app.use(cors({
 }))
 
 
+app.use('/api/accountant',require('./Routes/Accountant/accountantRoute'))
+app.use('/api/lead',require('./Routes/Lead/leadRoute'))
+app.use('/api/collegemanagement',require('./Routes/CollegeManagement/collegeManagementRoute'))
+app.use('/api/registrationtable',require('./Routes/RegistrationTable/registrationtableRoute'))
+
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
