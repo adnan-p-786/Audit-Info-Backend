@@ -17,6 +17,7 @@ app.use('/api/lead',require('./Routes/Lead/leadRoute'))
 app.use('/api/collegemanagement',require('./Routes/CollegeManagement/collegeManagementRoute'))
 app.use('/api/registrationtable',require('./Routes/RegistrationTable/registrationtableRoute'))
 app.use('/api/collegeaccount',require('./Routes/College Account/collegeaccountRoute'))
+app.use('/api/sendamount',require('./Routes/Send Amount/sendAmountRoute'))
 
 
 app.get('/', (req, res) => {
