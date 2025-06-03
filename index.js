@@ -18,7 +18,12 @@ app.use('/api/collegemanagement',require('./Routes/CollegeManagement/collegeMana
 app.use('/api/registrationtable',require('./Routes/RegistrationTable/registrationtableRoute'))
 app.use('/api/collegeaccount',require('./Routes/College Account/collegeaccountRoute'))
 app.use('/api/sendamount',require('./Routes/Send Amount/sendAmountRoute'))
+app.use('/api/managerpoint',require('./Routes/Manager Point/managerPointRoute'))
+app.use('/api/srcpoint',require('./Routes/Src Point/srcPointRoute'))
+app.use('/api/sropoint',require('./Routes/Sro Point/sroPointRoute'))
+app.use('/api/aknowledgement',require('./Routes/Acknowledgement/acknowledgementRoute'))
 
+app.use('/api/images', express.static('upload/images'));
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
