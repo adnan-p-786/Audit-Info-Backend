@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/post',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,name,school_code,Branch,branchId,Lead,RegistrationTable}= req.body
-        if (!createdAt || !updatedAt ||!name ||!school_code ||!Branch ||!branchId ||!Lead ||!RegistrationTable)
+        const {createdAt,updatedAt,name,school_code,Branch,branchId}= req.body
+        if (!createdAt || !updatedAt ||!name ||!school_code ||!Branch ||!branchId)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await SchoolManagementModel.create({createdAt,updatedAt,name,school_code,Branch,branchId,Lead,RegistrationTable})
+        const newData = await SchoolManagementModel.create({createdAt,updatedAt,name,school_code,Branch,branchId})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)

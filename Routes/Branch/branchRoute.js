@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/post',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,name,code,admins,status,SRC,SRO,administractor,Lead,SchoolManagement,CollegeManagement,Accounts,RegistrationTable,Expense,SendAmount,SalaryTable}= req.body
-        if (!createdAt || !updatedAt ||!name ||!code ||!admins ||!status ||!SRC ||!SRO ||!administractor ||!Lead ||!SchoolManagement ||!CollegeManagement ||!Accounts ||!RegistrationTable ||!Expense  ||!SendAmount  ||!SalaryTable)
+        const {createdAt,updatedAt,name,code,status}= req.body
+        if (!createdAt || !updatedAt ||!name ||!code ||!status)
             res.status(400).json({message: "all fields are required"})
-        const newData = await BranchModel.create({createdAt,updatedAt,name,code,admins,status,SRC,SRO,administractor,Lead,SchoolManagement,CollegeManagement,Accounts,RegistrationTable,Expense,SendAmount,SalaryTable})
+        const newData = await BranchModel.create({createdAt,updatedAt,name,code,status})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -19,7 +19,6 @@ router.post('/post',async(req,res)=>{
 router.get('/get', async (req, res) => {
     try {
         const data = await BranchModel.find()
-        .populate('branchId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);

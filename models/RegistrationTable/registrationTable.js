@@ -94,30 +94,6 @@ const RegistrationTableSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-     acknowledgement: {
-        type: String,
-        required: true,
-    },
-     recivedAmount: {
-        type: String,
-        required: true,
-    },
-     SendAmount: {
-        type: String,
-        required: true,
-    },
-      ManagerPoint: {
-        type: String,
-        required: true,
-    },
-      SRCPoint: {
-        type: String,
-        required: true,
-    },
-      SROPoint: {
-        type: String,
-        required: true,
-    },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });

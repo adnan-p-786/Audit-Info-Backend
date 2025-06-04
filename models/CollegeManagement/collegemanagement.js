@@ -41,18 +41,6 @@ const CollegeManagementSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
-    registration: {
-        type: String,
-        required: true,
-    },
-     SendAmount: {
-        type: String,
-        required: true,
-    },
-     CollegeAccounts: {
-        type: String,
-        required: true,
-    },
 },{
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } 
 });

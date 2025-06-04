@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/post',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,name,expense,accounts,SendAmount,SalaryTable}= req.body
-        if (!createdAt || !updatedAt ||!name ||!expense ||!accounts ||!SendAmount ||!SalaryTable)
+        const {createdAt,updatedAt,name}= req.body
+        if (!createdAt || !updatedAt ||!name)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await particularModel.create({createdAt,updatedAt,name,expense,accounts,SendAmount,SalaryTable})
+        const newData = await particularModel.create({createdAt,updatedAt,name})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)

@@ -17,14 +17,6 @@ const SchoolManagementSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    Lead: {
-        type: String,
-        required: true,
-    },
-    RegistrationTable: {
-        type: String,
-        required: true,
-    },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });

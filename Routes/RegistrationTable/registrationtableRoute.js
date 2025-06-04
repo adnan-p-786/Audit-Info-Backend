@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/post',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,name,SchoolManagement,date,SRO,sROId,SRC,sRCId,phone,cancel,address,CollegeManagement,collegeId,course,total_fee,recived_amount,service_charge,recived_service_charge,status,certificates,request_status,booking_amount,Branch,branchId,acknowledgement,recivedAmount,SendAmount,ManagerPoint,SRCPoint,SROPoint}= req.body
-        if (!createdAt || !updatedAt ||!name ||!SchoolManagement ||!date ||!SRO ||!sROId ||!SRC ||!sRCId ||!phone ||!cancel ||!address ||!CollegeManagement ||!collegeId ||!course ||!total_fee ||!recived_amount ||!service_charge ||!recived_service_charge ||!status ||!certificates ||!request_status ||!booking_amount ||!Branch ||!branchId ||!acknowledgement ||!recivedAmount ||!SendAmount ||!ManagerPoint ||!SRCPoint ||!SROPoint)
+        const {createdAt,updatedAt,name,SchoolManagement,date,SRO,sROId,SRC,sRCId,phone,cancel,address,CollegeManagement,collegeId,course,total_fee,recived_amount,service_charge,recived_service_charge,status,certificates,request_status,booking_amount,Branch,branchId}= req.body
+        if (!createdAt || !updatedAt ||!name ||!SchoolManagement ||!date ||!SRO ||!sROId ||!SRC ||!sRCId ||!phone ||!cancel ||!address ||!CollegeManagement ||!collegeId ||!course ||!total_fee ||!recived_amount ||!service_charge ||!recived_service_charge ||!status ||!certificates ||!request_status ||!booking_amount ||!Branch ||!branchId)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await RegistrationTableModel.create({createdAt,updatedAt,name,SchoolManagement,date,SRO,sROId,SRC,sRCId,phone,cancel,address,CollegeManagement,collegeId,course,total_fee,recived_amount,service_charge,recived_service_charge,status,certificates,request_status,booking_amount,Branch,branchId,acknowledgement,recivedAmount,SendAmount,ManagerPoint,SRCPoint,SROPoint})
+        const newData = await RegistrationTableModel.create({createdAt,updatedAt,name,SchoolManagement,date,SRO,sROId,SRC,sRCId,phone,cancel,address,CollegeManagement,collegeId,course,total_fee,recived_amount,service_charge,recived_service_charge,status,certificates,request_status,booking_amount,Branch,branchId})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)

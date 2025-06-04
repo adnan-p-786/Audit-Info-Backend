@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/post',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,college,city,state,category,Branch,branchId,bm_point,src_point,sro_point,status,registration,SendAmount,CollegeAccounts}= req.body
-        if (!createdAt || !updatedAt ||!college ||!city ||!state ||!category ||!Branch ||!branchId ||!bm_point ||!src_point ||!sro_point ||!registration ||!SendAmount ||!CollegeAccounts)
+        const {createdAt,updatedAt,college,city,state,category,Branch,branchId,bm_point,src_point,sro_point,status}= req.body
+        if (!createdAt || !updatedAt ||!college ||!city ||!state ||!category ||!Branch ||!branchId ||!bm_point ||!src_point ||!sro_point ||!status)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await CollegeManagementModel.create({createdAt,updatedAt,college,city,state,category,Branch,branchId,bm_point,src_point,sro_point,status,registration,SendAmount,CollegeAccounts})
+        const newData = await CollegeManagementModel.create({createdAt,updatedAt,college,city,state,category,Branch,branchId,bm_point,src_point,sro_point,status})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
