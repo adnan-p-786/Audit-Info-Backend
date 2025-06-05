@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const StudentHistorySchema = new mongoose.Schema({
     date: {
         type: Date,
-        required: true,
+        default: Date.now,
     },
     message: {
         type: String,
@@ -17,17 +17,14 @@ const StudentHistorySchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    Lead: {
-        type: String,
-        required: true,
-    },
     leadId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Lead",
+        required: true
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('studentHistory', StudentHistorySchema)
+module.exports = mongoose.model('StudentHistory', StudentHistorySchema)
 

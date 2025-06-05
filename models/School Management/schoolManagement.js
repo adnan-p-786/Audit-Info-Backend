@@ -8,18 +8,16 @@ const SchoolManagementSchema = new mongoose.Schema({
     school_code: {
         type: String,
         required: true,
-    },
-    Branch: {
-        type: Date,
-        required: true,
+        unique: true,
     },
     branchId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Branch',
         required: true,
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('schoolManagement', SchoolManagementSchema)
+module.exports = mongoose.model('SchoolManagement', SchoolManagementSchema)
 

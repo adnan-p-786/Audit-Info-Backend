@@ -17,13 +17,10 @@ const CollegeManagementSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    Branch: {
-        type: String,
-        required: true,
-    },
     branchId: {
-        type: Boolean,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Branch",
+        required: true
     },
     bm_point: {
         type: Number,
@@ -41,10 +38,10 @@ const CollegeManagementSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
     },
-},{
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } 
+}, {
+    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
 
-module.exports = mongoose.model('collegeManagement', CollegeManagementSchema)
+module.exports = mongoose.model('CollegeManagement', CollegeManagementSchema)
 

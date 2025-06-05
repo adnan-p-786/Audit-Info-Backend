@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/post',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,name,phone_number,date_of_joining,status,delete:del,address,mark,subject_name,course,studentHistory,SRC,sRCId,SRO,sROId,Branch,branchId,SchoolManagement,schoolId}= req.body
-        if (!createdAt || !updatedAt ||!name ||!phone_number ||!date_of_joining ||!status ||!del ||!mark ||!subject_name ||!course ||!address ||!studentHistory ||!SRC ||!sRCId  ||!SRO  ||!sROId  ||!Branch  ||!branchId ||!SchoolManagement ||!schoolId)
+        const {createdAt,updatedAt,name,phone_number,date_of_joining,status,delete:del,address,mark,subject_name,course,sRCId,sROId,branchId,SchoolManagement,schoolId}= req.body
+        if (!createdAt || !updatedAt ||!name ||!phone_number ||!date_of_joining ||!status ||!del ||!mark ||!subject_name ||!course ||!address ||!sRCId  ||!sROId  ||!branchId ||!SchoolManagement ||!schoolId)
             res.status(400).json({message: "all fields are required"})
-        const newData = await LeadModel.create({createdAt,updatedAt,name,phone_number,date_of_joining,status,delete:del,address,mark,subject_name,course,studentHistory,SRC,sRCId,SRO,sROId,Branch,branchId,SchoolManagement,schoolId})
+        const newData = await LeadModel.create({createdAt,updatedAt,name,phone_number,date_of_joining,status,delete:del,address,mark,subject_name,course,sRCId,sROId,branchId,SchoolManagement,schoolId})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -20,6 +20,8 @@ router.get('/get', async (req, res) => {
     try {
         const data = await LeadModel.find()
         .populate('branchId')
+        .populate('SchoolManagement')
+        .populate('User')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);

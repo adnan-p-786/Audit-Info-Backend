@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/post',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,amount,amount_type,collected,date,RegistrationTable,registrationTableId}= req.body
-        if (!createdAt || !updatedAt ||!amount ||!amount_type ||!collected ||!date ||!RegistrationTable ||!registrationTableId)
+        const {createdAt,updatedAt,amount,amount_type,collected,date,registrationTableId}= req.body
+        if (!createdAt || !updatedAt ||!amount ||!amount_type ||!collected ||!date ||!registrationTableId)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await RecievedAmountModel.create({createdAt,updatedAt,amount,amount_type,collected,date,RegistrationTable,registrationTableId})
+        const newData = await RecievedAmountModel.create({createdAt,updatedAt,amount,amount_type,collected,date,registrationTableId})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -19,6 +19,7 @@ router.post('/post',async(req,res)=>{
 router.get('/get', async (req, res) => {
     try {
         const data = await RecievedAmountModel.find()
+        .populate('registrationTableId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);

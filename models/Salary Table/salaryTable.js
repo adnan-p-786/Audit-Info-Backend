@@ -9,69 +9,48 @@ const SalaryTableSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    SRO: {
-        type: String,
-        required: true,
-    },
     sROId: {
-        type: Date,
-        required: true,
-    },
-    SRC: {
-        type: Date,
-        required: true,
+       type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     sRCId: {
-        type: String,
-        required: true,
-    },
-    AdminUsers: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     adminUsersId: {
-        type: String,
-        required: true,
-    },
-    Administractor: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     administractorId: {
-        type: String,
-        required: true,
-    },
-    Accountant: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     accountantId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     date: {
         type: Date,
-        required: true,
-    },
-    Particular: {
-        type: String,
-        required: true,
+        default: Date.now,
     },
     particularId: {
-        type: String,
-        required: true,
-    },
-    Branch: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Particular",
+        required: true
     },
     branchId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Branch',
+        required: true
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('salarytable', SalaryTableSchema)
+module.exports = mongoose.model('Salarytable', SalaryTableSchema)
 

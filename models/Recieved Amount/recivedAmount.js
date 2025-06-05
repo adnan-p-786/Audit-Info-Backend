@@ -17,17 +17,14 @@ const RecievedAmountSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    RegistrationTable: {
-        type: String,
-        required: true,
-    },
     registrationTableId: {
-        type: String,
-        required: true,
+       type: mongoose.Schema.Types.ObjectId,
+        ref: "RegistrationTable",
+        required: true
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('recievedAmount', RecievedAmountSchema)
+module.exports = mongoose.model('RecievedAmount', RecievedAmountSchema)
 

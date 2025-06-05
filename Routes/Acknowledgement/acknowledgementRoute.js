@@ -32,12 +32,12 @@ router.get("/upload/images/:imageName", (req, res) => {
 router.post('/post', uploadImg.single("image"),async(req,res)=>{
     try {
         const image_url = `http://localhost:3000/api/aknowledgement/upload/images/${req.file.filename}`;
-        const {createdAt,updatedAt,RegistrationTable,registrationTableId}= req.body
+        const {createdAt,updatedAt,registrationTableId}= req.body
 
-        if (!createdAt || !updatedAt ||!RegistrationTable ||!registrationTableId)
+        if (!createdAt || !updatedAt ||!registrationTableId)
             return res.status(400).json({message: "all fields are required"})
 
-        const newData = await AcknowledgementModel.create({createdAt: createdAt, updatedAt: updatedAt, RegistrationTable: RegistrationTable, registrationTableId: registrationTableId, image: image_url})
+        const newData = await AcknowledgementModel.create({createdAt: createdAt, updatedAt: updatedAt, registrationTableId: registrationTableId, image: image_url})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -48,6 +48,7 @@ router.post('/post', uploadImg.single("image"),async(req,res)=>{
 router.get('/get', async (req, res) => {
     try {
         const data = await AcknowledgementModel.find()
+        .populate('registrationTableId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);

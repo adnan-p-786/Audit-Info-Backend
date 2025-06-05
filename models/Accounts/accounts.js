@@ -13,29 +13,23 @@ const AccountsSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    Branch: {
-        type: String,
-        required: true,
-    },
     branchId: {
-        type: String,
-        required: true,
+       type: mongoose.Schema.Types.ObjectId,
+        ref: "Branch",
+        required: true
     },
     date: {
         type: Date,
-        required: true,
-    },
-    Particular: {
-        type: String,
-        required: true,
+        default: Date.now,
     },
     particularId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Particular",
+        required: true
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('account', AccountsSchema)
+module.exports = mongoose.model('Account', AccountsSchema)
 

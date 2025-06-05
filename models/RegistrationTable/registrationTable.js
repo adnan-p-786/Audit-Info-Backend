@@ -5,29 +5,24 @@ const RegistrationTableSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    SchoolManagement: {
-        type: String,
-        required: true,
+    schoolId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "SchoolManagement",
+        required: true
     },
     date: {
         type: Date,
         required: true,
     },
-    SRO: {
-        type: String,
-        required: true,
-    },
     sROId: {
-        type: String,
-        required: true,
-    },
-    SRC: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     sRCId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     phone: {
         type: String,
@@ -41,14 +36,10 @@ const RegistrationTableSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    CollegeManagement: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "collegeManagement",
-        required: true
-    },
     collegeId: {
-        type: String,
-        default: null,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CollegeManagement",
+        required: true
     },
     course: {
         type: String,
@@ -70,33 +61,30 @@ const RegistrationTableSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-     status: {
+    status: {
         type: String,
         required: true,
     },
-     certificates: {
+    certificates: {
         type: String,
         required: true,
     },
-     request_status: {
+    request_status: {
         type: String,
         required: true,
     },
-     booking_amount: {
+    booking_amount: {
         type: Number,
         required: true,
     },
-     Branch: {
-        type: String,
-        required: true,
-    },
-     branchId: {
-        type: String,
-        required: true,
+    branchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Branch",
+        required: true
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('registrationTable', RegistrationTableSchema)
+module.exports = mongoose.model('RegistrationTable', RegistrationTableSchema)
 

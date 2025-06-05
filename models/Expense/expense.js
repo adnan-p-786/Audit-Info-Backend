@@ -9,29 +9,23 @@ const ExpenseSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    Particular: {
-        type: String,
-        required: true,
-    },
     particularId: {
-        type: Date,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Particular",
+        required: true
     },
     date: {
         type: Date,
-        required: true,
-    },
-    Branch: {
-        type: String,
-        required: true,
+        default: Date.now,
     },
     branchId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Branch',
+        required: true
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('expense', ExpenseSchema)
+module.exports = mongoose.model('Expense', ExpenseSchema)
 

@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/post',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,name,school_code,Branch,branchId}= req.body
-        if (!createdAt || !updatedAt ||!name ||!school_code ||!Branch ||!branchId)
+        const {createdAt,updatedAt,name,school_code,branchId}= req.body
+        if (!createdAt || !updatedAt ||!name ||!school_code ||!branchId)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await SchoolManagementModel.create({createdAt,updatedAt,name,school_code,Branch,branchId})
+        const newData = await SchoolManagementModel.create({createdAt,updatedAt,name,school_code,branchId})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -19,6 +19,7 @@ router.post('/post',async(req,res)=>{
 router.get('/get', async (req, res) => {
     try {
         const data = await SchoolManagementModel.find()
+        .populate('branchId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);

@@ -5,13 +5,10 @@ const CollegeAccountsSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    CollegeManagement: {
-        type: String,
-        required: true,
-    },
     collegeId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CollegeManagement",
+        required: true
     },
     debit: {
         type: Number,
@@ -23,11 +20,11 @@ const CollegeAccountsSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        required: true,
+        default: Date.now,
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('collegeAccount', CollegeAccountsSchema)
+module.exports = mongoose.model('CollegeAccount', CollegeAccountsSchema)
 

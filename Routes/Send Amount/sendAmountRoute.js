@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/post',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,RegistrationTable,registrationTableId,amount,Particular,particularId,Branch,branchId,CollegeManagement,collegeId,date}= req.body
-        if (!createdAt || !updatedAt ||!RegistrationTable ||!registrationTableId ||!amount ||!Particular ||!particularId ||!Branch ||!branchId ||!CollegeManagement ||!collegeId ||!date)
+        const {createdAt,updatedAt,registrationTableId,amount,particularId,branchId,collegeId,date}= req.body
+        if (!createdAt || !updatedAt ||!registrationTableId ||!amount ||!particularId ||!branchId ||!collegeId ||!date)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await SendAmountModel.create({createdAt,updatedAt,RegistrationTable,registrationTableId,amount,Particular,particularId,Branch,branchId,CollegeManagement,collegeId,date})
+        const newData = await SendAmountModel.create({createdAt,updatedAt,registrationTableId,amount,particularId,branchId,collegeId,date})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -19,6 +19,10 @@ router.post('/post',async(req,res)=>{
 router.get('/get', async (req, res) => {
     try {
         const data = await SendAmountModel.find()
+        .populate('registrationTableId')
+        .populate('particularId')
+        .populate('branchId')
+        .populate('collegeId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);

@@ -19,27 +19,21 @@ const SrcPointSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        required: true,
-    },
-    SRC: {
-        type: String,
-        required: true,
+        default: Date.now,
     },
     sRCId: {
-        type: String,
-        required: true,
-    },
-    RegistrationTable: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true,
     },
     registrationTableId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "RegistrationTable",
+        required: true
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('srcpoint', SrcPointSchema)
+module.exports = mongoose.model('SrcPoint', SrcPointSchema)
 

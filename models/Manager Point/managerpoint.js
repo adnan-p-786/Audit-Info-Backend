@@ -19,23 +19,17 @@ const ManagerPointSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        required: true,
-    },
-    AdminUsers: {
-        type: String,
-        required: true,
+        default: Date.now,
     },
     adminUsersId: {
-        type: String,
-        required: true,
-    },
-    RegistrationTable: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     registrationTableId: {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "RegistrationTable",
+        required: true
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }

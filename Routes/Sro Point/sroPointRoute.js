@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/post',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,debit,credit,type,Particular,date,SRO,sROId,RegistrationTable,registrationTableId}= req.body
-        if (!createdAt || !updatedAt ||!debit ||!credit ||!type ||!Particular ||!date ||!SRO ||!sROId ||!RegistrationTable ||!registrationTableId)
+        const {createdAt,updatedAt,debit,credit,type,Particular,date,sROId,registrationTableId}= req.body
+        if (!createdAt || !updatedAt ||!debit ||!credit ||!type ||!Particular ||!date ||!sROId ||!registrationTableId)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await SroPointModel.create({createdAt,updatedAt,debit,credit,type,Particular,date,SRO,sROId,RegistrationTable,registrationTableId})
+        const newData = await SroPointModel.create({createdAt,updatedAt,debit,credit,type,Particular,date,sROId,registrationTableId})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -19,6 +19,8 @@ router.post('/post',async(req,res)=>{
 router.get('/get', async (req, res) => {
     try {
         const data = await SroPointModel.find()
+        .populate('sROId')
+        .populate('registrationTableId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);

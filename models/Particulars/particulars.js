@@ -9,5 +9,5 @@ const ParticularSchema = new mongoose.Schema({
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('particulars', ParticularSchema)
+module.exports = mongoose.model('Particular', ParticularSchema)
 
