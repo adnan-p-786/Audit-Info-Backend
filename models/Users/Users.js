@@ -29,9 +29,15 @@ const UserSchema = new mongoose.Schema({
     },
     lead: [{ type: mongoose.Schema.Types.ObjectId, ref: 'lead' }],
     registration: [{ type: mongoose.Schema.Types.ObjectId, ref: 'registrationTable' }],
-    srcPoint: [{ type: mongoose.Schema.Types.ObjectId, ref: 'srcpoint' }],
-    sroPoint: [{ type: mongoose.Schema.Types.ObjectId, ref: 'sropoint' }],
-    SalaryTable: [{ type: mongoose.Schema.Types.ObjectId, ref: 'salarytable' }],
+    srcPoint: { 
+        type:Number
+    },
+    sroPoint: { 
+        type:Number
+    },
+    Salary: { 
+        type: Number,
+    },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });

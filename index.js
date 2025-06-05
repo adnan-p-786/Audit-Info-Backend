@@ -12,7 +12,7 @@ app.use(cors({
 }))
 
 
-// app.use('/api/user',require('./Routes/Accountant/accountantRoute'))
+app.use('/api/user',require('./Routes/Users/usersRoute.js'))
 app.use('/api/lead',require('./Routes/Lead/leadRoute'))
 app.use('/api/collegemanagement',require('./Routes/CollegeManagement/collegeManagementRoute'))
 app.use('/api/registrationtable',require('./Routes/RegistrationTable/registrationtableRoute'))
@@ -30,6 +30,7 @@ app.use('/api/particular',require('./Routes/Particulars/particularsRoute'))
 app.use('/api/expense',require('./Routes/Expense/expenseRoute.js'))
 app.use('/api/expense',require('./Routes/Salary Table/salaryTableRoute.js'))
 app.use('/api/branch',require('./Routes/Branch/branchRoute.js'))
+app.use('/api/manager',require('./Routes/Manager/managerRoute.js'))
 
 app.use('/api/images', express.static('upload/images'));
 
