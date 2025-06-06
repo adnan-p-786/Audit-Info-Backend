@@ -26,7 +26,7 @@ router.get('/get', async (req, res) => {
 });
 
 
-router.put('/put/:id', async (req, res) => {
+router.put('/update/:id', async (req, res) => {
     try {
         const id = req.params.id
         const updateData = await BranchModel.findOneAndUpdate({ _id: id }, req.body, { new: true })
