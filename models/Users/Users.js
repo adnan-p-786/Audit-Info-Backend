@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema({
     is_admin: { type: Boolean, default: false },
     head_administractor: { type: Boolean, default: false },
 
-    branchId: { type: mongoose.Schema.Types.ObjectId, ref: 'branch'},
+    branchId: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch'},
     managerPoint: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ManagerPoint' }],
     sroId: {
         type: String

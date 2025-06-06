@@ -15,6 +15,8 @@ app.use(cors({
 app.use('/api/user',require('./Routes/Auth/Auth.js'))
 app.use('/api/manager',require('./Routes/Manager/managerRoute.js'))
 app.use('/api/administractor',require('./Routes/Administractor/administractorRoute.js'))
+app.use('/api/accountant',require('./Routes/Accountant/accountantRoute.js'))
+app.use('/api/src',require('./Routes/Src admin/srcRoute.js'))
 
 app.use('/api/lead',require('./Routes/Lead/leadRoute'))
 app.use('/api/collegemanagement',require('./Routes/CollegeManagement/collegeManagementRoute'))
