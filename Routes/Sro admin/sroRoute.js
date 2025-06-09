@@ -1,5 +1,5 @@
 const express = require('express')
-const SrcModel = require('../../models/Users/Users')
+const SroModel = require('../../models/Users/Users')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
@@ -7,12 +7,12 @@ const router = express.Router()
 
 router.post('/create', async (req, res) => {
     try {
-        const { name, email, password,phone_number,date_of_joining,address,point_amount,status,employee_code,branchId} = req.body
+        const { name, email, password,phone_number,date_of_joining,address,point_amount,status,employee_code,srcId,branchId} = req.body
 
-        if (!name || !email || !password ||!phone_number || !date_of_joining || !address ||!point_amount || !status || !employee_code || !branchId) {
+        if (!name || !email || !password ||!phone_number || !date_of_joining || !address ||!point_amount || !status || !employee_code ||!srcId || !branchId) {
             return res.status(400).json({ message: "All fields are required"})
         }
-        const existingUser = await SrcModel.findOne({ email });
+        const existingUser = await SroModel.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: "Email already in use" });
         }
@@ -20,29 +20,30 @@ router.post('/create', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newsrc = await SrcModel.create({
+        const newsro = await SroModel.create({
             name,
             email,
             password: hashedPassword,
-            position:"SRC",
+            position:"SRO",
             employee_code,
             status,
             phone_number,
             date_of_joining,
             address,
             point_amount,
+            srcId,
             branchId
         });
 
-        const token = jwt.sign({ id: newsrc._id }, process.env.JWT_SECRET);
+        const token = jwt.sign({ id: newsro._id }, process.env.JWT_SECRET);
 
         return res.status(201).json({
             success: true,
             token,
             user: {
-                id: newsrc._id,
-                Name: newsrc.name,
-                Email: newsrc.email,
+                id: newsro._id,
+                Name: newsro.name,
+                Email: newsro.email,
             }
         });
 
@@ -54,8 +55,9 @@ router.post('/create', async (req, res) => {
 
 router.get('/get', async (req, res) => {
     try {
-        const Src = await SrcModel.find()
+        const Src = await SroModel.find()
         .populate('branchId')
+        .populate('srcId')
         res.status(200).json(Src);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
@@ -65,7 +67,7 @@ router.get('/get', async (req, res) => {
 router.put('/update/:id', async (req, res) => {
     try {
         const id = req.params.id
-        const updateData = await SrcModel.findOneAndUpdate({ _id: id }, req.body, { new: true })
+        const updateData = await SroModel.findOneAndUpdate({ _id: id }, req.body, { new: true })
         res.status(200).json(updateData)
     } catch (error) {
         res.status(400).json(error)
@@ -75,11 +77,11 @@ router.put('/update/:id', async (req, res) => {
 router.delete('/delete/:id', async (req, res) => {
     try {
         const id = req.params.id; 
-        const deleteData = await SrcModel.findByIdAndDelete(id);
+        const deleteData = await SroModel.findByIdAndDelete(id);
         if (!deleteData) {
-            return res.status(404).json({ message: "Src not found" });
+            return res.status(404).json({ message: "Sro not found" });
         }
-        res.status(200).json({ message: "Src deleted successfully", deletedLead: deleteData });
+        res.status(200).json({ message: "Sro deleted successfully", deletedSro: deleteData });
     } catch (error) {
         res.status(400).json(error);
     }
@@ -94,25 +96,25 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: "Email and password are required" });
         }
 
-        const src = await SrcModel.findOne({ email });
+        const sro = await SroModel.findOne({ email });
 
-        if (!src) {
-            return res.status(404).json({ success: false, message: "src does not exist" });
+        if (!sro) {
+            return res.status(404).json({ success: false, message: "sro does not exist" });
         }
 
-        const isMatch = await bcrypt.compare(password, src.password);
+        const isMatch = await bcrypt.compare(password, sro.password);
         if (!isMatch) {
             return res.status(401).json({ success: false, message: "mismatch" });
         }
 
-        const token = jwt.sign({ id: src._id }, process.env.JWT_SECRET);
+        const token = jwt.sign({ id: sro._id }, process.env.JWT_SECRET);
 
         res.status(200).json({
             success: true,
             data: {
                 token,
-                id: src._id,
-                Email: src.email
+                id: sro._id,
+                Email: sro.email
             }
         });
 
