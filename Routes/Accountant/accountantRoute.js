@@ -9,7 +9,7 @@ router.post('/create', async (req, res) => {
     try {
         const { name, email, password,employee_code,status,phone_number,date_of_joining,address } = req.body
 
-        if (!name || !email || !password ||!employee_code ||!status  || !phone_number || !date_of_joining || !address) {
+        if (!name || !email || !password ||!employee_code ||!status===undefined  || !phone_number || !date_of_joining || !address) {
             return res.status(400).json({ message: "All fields are required"})
         }
         const existingUser = await AccountantModel.findOne({ email });
