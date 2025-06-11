@@ -55,7 +55,7 @@ router.post('/create', async (req, res) => {
 
 router.get('/get', async (req, res) => {
     try {
-        const Src = await SroModel.find()
+        const Src = await SroModel.find({position: "SRO" })
         .populate('branchId')
         .populate('srcId')
         res.status(200).json(Src);

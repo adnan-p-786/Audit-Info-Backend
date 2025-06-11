@@ -52,7 +52,7 @@ router.post('/create', async (req, res) => {
 
 router.get('/get', async (req, res) => {
     try {
-        const Accountant = await AccountantModel.find()
+        const Accountant = await AccountantModel.find({position: "Accountant"})
         res.status(200).json(Accountant);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });

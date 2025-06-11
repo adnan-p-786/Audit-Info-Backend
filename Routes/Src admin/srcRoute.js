@@ -9,7 +9,7 @@ router.post('/create', async (req, res) => {
     try {
         const { name, email, password,phone_number,date_of_joining,address,point_amount,status,employee_code,branchId} = req.body
 
-        if (!name || !email || !password ||!phone_number || !date_of_joining || !address ||!point_amount || !status || !employee_code || !branchId) {
+        if (!name || !email || !password ||!phone_number || !date_of_joining || !address ||!point_amount || !status===undefined || !employee_code || !branchId) {
             return res.status(400).json({ message: "All fields are required"})
         }
         const existingUser = await SrcModel.findOne({ email });
@@ -54,13 +54,14 @@ router.post('/create', async (req, res) => {
 
 router.get('/get', async (req, res) => {
     try {
-        const Src = await SrcModel.find()
-        .populate('branchId')
+        const Src = await SrcModel.find({ position: "SRC" })
+            .populate('branchId');
         res.status(200).json(Src);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });
+
 
 router.put('/update/:id', async (req, res) => {
     try {

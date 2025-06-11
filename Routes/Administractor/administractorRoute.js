@@ -53,7 +53,7 @@ router.post('/create', async (req, res) => {
 
 router.get('/get', async (req, res) => {
     try {
-        const administractor = await AdministractorModel.find()
+        const administractor = await AdministractorModel.find({position: "Administractor" })
         .populate('branchId')
         res.status(200).json(administractor);
     } catch (error) {
