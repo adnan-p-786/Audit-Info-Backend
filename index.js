@@ -36,6 +36,8 @@ app.use('/api/particular',require('./Routes/Particulars/particularsRoute'))
 app.use('/api/expense',require('./Routes/Expense/expenseRoute.js'))
 app.use('/api/expense',require('./Routes/Salary Table/salaryTableRoute.js'))
 app.use('/api/branch',require('./Routes/Branch/branchRoute.js'))
+app.use('/api/agent',require('./Routes/Agent/agentRoute.js'))
+app.use('/api/agentaccount',require('./Routes/Agent Accounts/agentAccount.js'))
 
 app.use('/api/images', express.static('upload/images'));
 

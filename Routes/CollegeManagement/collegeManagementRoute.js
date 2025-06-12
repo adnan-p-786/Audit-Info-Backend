@@ -3,12 +3,12 @@ const CollegeManagementModel = require ('../../models/CollegeManagement/collegem
 const router = express.Router()
 
 
-router.post('/post',async(req,res)=>{
+router.post('/create',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,college,city,state,category,branchId,bm_point,src_point,sro_point,status}= req.body
-        if (!createdAt || !updatedAt ||!college ||!city ||!state ||!category ||!branchId ||!bm_point ||!src_point ||!sro_point ||!status)
+        const {college,city,state,category,branchId,bm_point,src_point,sro_point,status}= req.body
+        if (!college ||!city ||!state ||!category ||!branchId ||!bm_point ||!src_point ||!sro_point ||!status)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await CollegeManagementModel.create({createdAt,updatedAt,college,city,state,category,branchId,bm_point,src_point,sro_point,status})
+        const newData = await CollegeManagementModel.create({college,city,state,category,branchId,bm_point,src_point,sro_point,status})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -27,7 +27,7 @@ router.get('/get', async (req, res) => {
 });
 
 
-router.put('/put/:id', async (req, res) => {
+router.put('/update/:id', async (req, res) => {
     try {
         const id = req.params.id
         const updateData = await CollegeManagementModel.findOneAndUpdate({ _id: id }, req.body, { new: true })

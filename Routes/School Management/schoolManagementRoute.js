@@ -3,12 +3,12 @@ const SchoolManagementModel = require ('../../models/School Management/schoolMan
 const router = express.Router()
 
 
-router.post('/post',async(req,res)=>{
+router.post('/create',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,name,school_code,branchId}= req.body
-        if (!createdAt || !updatedAt ||!name ||!school_code ||!branchId)
+        const {name,school_code,branchId}= req.body
+        if (!name ||!school_code ||!branchId)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await SchoolManagementModel.create({createdAt,updatedAt,name,school_code,branchId})
+        const newData = await SchoolManagementModel.create({name,school_code,branchId})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -27,7 +27,7 @@ router.get('/get', async (req, res) => {
 });
 
 
-router.put('/put/:id', async (req, res) => {
+router.put('/update/:id', async (req, res) => {
     try {
         const id = req.params.id
         const updateData = await SchoolManagementModel.findOneAndUpdate({ _id: id }, req.body, { new: true })
