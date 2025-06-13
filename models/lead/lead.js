@@ -11,7 +11,7 @@ const LeadSchema = new mongoose.Schema({
     },
     date_of_joining: {
         type: Date,
-        default: Date.now,
+        required: true,
     },
     status: {
         type: String,
@@ -52,14 +52,10 @@ const LeadSchema = new mongoose.Schema({
         ref: "Branch",
         required: true
     },
-    SchoolManagement: {
+    schoolId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "SchoolManagement",
         required: true
-    },
-    schoolId: {
-        type: String,
-        required: true,
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }

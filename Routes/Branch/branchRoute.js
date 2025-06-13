@@ -3,12 +3,12 @@ const BranchModel = require ('../../models/Branch/branch')
 const router = express.Router()
 
 
-router.post('/post',async(req,res)=>{
+router.post('/create',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,name,code,status}= req.body
-        if (!createdAt || !updatedAt ||!name ||!code ||!status)
+        const {name,code,status}= req.body
+        if (!name ||!code ||!status)
             res.status(400).json({message: "all fields are required"})
-        const newData = await BranchModel.create({createdAt,updatedAt,name,code,status})
+        const newData = await BranchModel.create({name,code,status})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)

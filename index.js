@@ -7,9 +7,7 @@ const cors = require('cors')
 
 app.use(express.json())
 // app.use(morgan('dev'));
-app.use(cors({
-    origin: 'http://localhost:5173'
-}))
+app.use(cors());
 
 
 app.use('/api/user',require('./Routes/Auth/Auth.js'))
