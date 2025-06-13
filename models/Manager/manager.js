@@ -18,6 +18,11 @@ const ManagerSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    branchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Branch",
+        required: true
+    },
     employee_code: {
         type: String,
         unique: true,

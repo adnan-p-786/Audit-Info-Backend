@@ -7,9 +7,9 @@ const router = express.Router()
 
 router.post('/create', async (req, res) => {
     try {
-        const { name, email, password,employee_code,phone_number,date_of_joining,address,point_amount,salary } = req.body
+        const { name, email, password,employee_code,phone_number,date_of_joining,address,point_amount,salary,branchId } = req.body
 
-        if (!name || !email || !password ||!employee_code  || !phone_number || !date_of_joining || !address || !point_amount ||!salary) {
+        if (!name || !email || !password ||!employee_code  || !phone_number || !date_of_joining || !address || !point_amount ||!salary || !branchId) {
             return res.status(400).json({ message: "All fields are required"})
         }
         const existingUser = await ManagerModel.findOne({ email });
@@ -53,7 +53,8 @@ router.post('/create', async (req, res) => {
 
 router.get('/get', async (req, res) => {
     try {
-        const managers = await ManagerModel.find();
+        const managers = await ManagerModel.find()
+        .populate('branchId'); 
         res.status(200).json(managers);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
