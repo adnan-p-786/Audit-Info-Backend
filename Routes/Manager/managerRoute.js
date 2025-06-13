@@ -29,6 +29,7 @@ router.post('/create', async (req, res) => {
             phone_number,
             date_of_joining,
             address,
+            branchId,
             point_amount,
             salary
         });

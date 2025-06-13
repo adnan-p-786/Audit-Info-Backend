@@ -50,7 +50,7 @@ const ManagerSchema = new mongoose.Schema({
     salary: {
         type: Number,
         required: true,
-    },
+    }
 });
 
 
