@@ -3,11 +3,15 @@ const connectDB = require('./db')
 const app = express()
 const port = 3000
 const cors = require('cors')
+const { default: job } = require('./cronJobs.js')
+
 // const morgan = require('morgan');
 
 app.use(express.json())
 // app.use(morgan('dev'));
 app.use(cors());
+
+job.start()
 
 
 app.use('/api/user',require('./Routes/Auth/Auth.js'))
