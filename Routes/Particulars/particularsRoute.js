@@ -3,12 +3,12 @@ const particularModel = require ('../../models/Particulars/particulars')
 const router = express.Router()
 
 
-router.post('/post',async(req,res)=>{
+router.post('/create',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,name}= req.body
-        if (!createdAt || !updatedAt ||!name)
+        const {name}= req.body
+        if (!name)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await particularModel.create({createdAt,updatedAt,name})
+        const newData = await particularModel.create({name})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
