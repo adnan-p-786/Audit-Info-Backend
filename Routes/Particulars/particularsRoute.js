@@ -3,17 +3,23 @@ const particularModel = require ('../../models/Particulars/particulars')
 const router = express.Router()
 
 
-router.post('/create',async(req,res)=>{
+router.post('/create',async (req, res) => {
     try {
-        const {name}= req.body
-        if (!name)
-            return res.status(400).json({message: "all fields are required"})
-        const newData = await particularModel.create({name})
-        res.status(201).json(newData)
+        if (req.body.name){
+            const particular = new particularModel({
+                name: req.body.name
+            });
+            const savedParticular = await particular.save();
+            res.status(201).json(savedParticular);
+        }
+        else{
+            return res.status(400).json("name must be required")
+        }
+        
     } catch (error) {
-        res.status(400).json(error)
+        res.status(400).json(error);
     }
-})
+});
 
 
 router.get('/get', async (req, res) => {
@@ -26,7 +32,7 @@ router.get('/get', async (req, res) => {
 });
 
 
-router.put('/put/:id', async (req, res) => {
+router.put('/update/:id', async (req, res) => {
     try {
         const id = req.params.id
         const updateData = await particularModel.findOneAndUpdate({ _id: id }, req.body, { new: true })

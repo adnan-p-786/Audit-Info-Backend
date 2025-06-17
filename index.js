@@ -4,13 +4,22 @@ const app = express()
 const port = 3000
 const cors = require('cors')
 const { default: job } = require('./cronJobs.js')
+// const morgan = require('morgan')
 
 
+// app.use(morgan('dev'))
 app.use(express.json())
-app.use(cors());
+app.use(cors({
+    origin:[
+        'http://localhost:5173',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+}));
+
+
+
 
 job.start()
-
 
 app.use('/api/user',require('./Routes/Auth/Auth.js'))
 app.use('/api/manager',require('./Routes/Manager/managerRoute.js'))
@@ -20,6 +29,7 @@ app.use('/api/src',require('./Routes/Src admin/srcRoute.js'))
 app.use('/api/sro',require('./Routes/Sro admin/sroRoute.js'))
 
 app.use('/api/lead',require('./Routes/Lead/leadRoute'))
+app.use('/api/leadhistory',require('./Routes/Lead/leadHistoryRoute.js'))
 app.use('/api/collegemanagement',require('./Routes/CollegeManagement/collegeManagementRoute'))
 app.use('/api/registrationtable',require('./Routes/RegistrationTable/registrationtableRoute'))
 app.use('/api/collegeaccount',require('./Routes/College Account/collegeaccountRoute'))

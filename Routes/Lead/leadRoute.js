@@ -6,7 +6,7 @@ const router = express.Router()
 router.post('/create',async(req,res)=>{
     try {
         const {name,phone_number,date_of_joining,status,delete:del,address,mark,subject_name,course,sRCId,sROId,branchId,schoolId}= req.body
-        if (!name ||!phone_number ||!date_of_joining ||!status ||!del ||!mark ||!subject_name ||!course ||!address ||!sRCId  ||!sROId  ||!branchId ||!schoolId)
+        if (!name ||!phone_number ||!date_of_joining ||!status ||!del==null ||!mark ||!subject_name ||!course ||!address ||!sRCId  ||!sROId  ||!branchId ||!schoolId)
             res.status(400).json({message: "all fields are required"})
         const newData = await LeadModel.create({name,phone_number,date_of_joining,status,delete:del,address,mark,subject_name,course,sRCId,sROId,branchId,schoolId})
         res.status(201).json(newData)
