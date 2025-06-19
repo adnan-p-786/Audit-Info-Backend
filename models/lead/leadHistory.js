@@ -1,10 +1,6 @@
 const mongoose = require('mongoose')
 
 const LeadHistorySchema = new mongoose.Schema({
-    date: {
-        type: Date,
-        required: true,
-    },
     status: {
         type: String,
         required: true,
