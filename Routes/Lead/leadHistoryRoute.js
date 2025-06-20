@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/create',async(req,res)=>{
     try {
-        const {date,status,message,leadId}= req.body
-        if (!date ||!status ||!message ||!leadId)
+        const {status,message,leadId}= req.body
+        if (!status ||!message ||!leadId)
             res.status(400).json({message: "all fields are required"})
-        const newData = await LeadHistoryModel.create({date,status,message,leadId})
+        const newData = await LeadHistoryModel.create({status,message,leadId})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)

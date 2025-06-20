@@ -1,5 +1,6 @@
 const express = require('express')
 const LeadModel = require ('../../models/lead/lead')
+const LeadHistoryModel = require ('../../models/lead/leadHistory')
 const router = express.Router()
 
 
@@ -17,17 +18,54 @@ router.post('/create',async(req,res)=>{
 
 
 router.get('/get', async (req, res) => {
-    try {
-        const data = await LeadModel.find()
-        .populate('branchId')
-        .populate('schoolId')
-        .populate('sRCId')
-        .populate('sROId')
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(400).json(error);
-    }
+  try {
+    // Fetch all leads
+    const leads = await LeadModel.find({ delete: false }) // assuming you want non-deleted leads
+      .populate('sRCId', 'name') // optional: populate user fields
+      .populate('sROId', 'name')
+      .populate('branchId', 'branch_name') // change fields as per your schema
+      .populate('schoolId', 'school_name');
+
+    // Fetch all histories in one query
+    const leadIds = leads.map(lead => lead._id);
+    const histories = await LeadHistoryModel.find({ leadId: { $in: leadIds } });
+
+    // Map leadId -> histories[]
+    const historyMap = histories.reduce((acc, history) => {
+      const id = history.leadId.toString();
+      if (!acc[id]) acc[id] = [];
+      acc[id].push(history);
+      return acc;
+    }, {});
+
+    // Add histories to each lead
+    const leadsWithHistories = leads.map(lead => {
+      return {
+        ...lead.toObject(),
+        histories: historyMap[lead._id.toString()] || [],
+      };
+    });
+
+    res.status(200).json(leadsWithHistories);
+  } catch (error) {
+    console.error('Error fetching leads:', error);
+    res.status(500).json({ message: 'Server Error', error });
+  }
 });
+
+
+// router.get('/get', async (req, res) => {
+//     try {
+//         const data = await LeadModel.find()
+//         .populate('branchId')
+//         .populate('schoolId')
+//         .populate('sRCId')
+//         .populate('sROId')
+//         res.status(200).json(data);
+//     } catch (error) {
+//         res.status(400).json(error);
+//     }
+// });
 
 
 router.put('/update/:id', async (req, res) => {

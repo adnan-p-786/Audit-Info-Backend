@@ -5,6 +5,10 @@ const RegistrationTableSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    agentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Agent"
+    },
     schoolId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "SchoolManagement",
@@ -16,21 +20,18 @@ const RegistrationTableSchema = new mongoose.Schema({
     },
     sROId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+        ref: "User"
     },
     sRCId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true
     },
     phone: {
         type: String,
         required: true,
     },
     cancel: {
-        type: Boolean,
-        required: true,
+        type: Boolean
     },
     address: {
         type: String,
@@ -47,19 +48,15 @@ const RegistrationTableSchema = new mongoose.Schema({
     },
     total_fee: {
         type: Number,
-        required: true,
     },
     recived_amount: {
         type: Number,
-        required: true,
     },
     service_charge: {
         type: Number,
-        required: true,
     },
     recived_service_charge: {
         type: Number,
-        required: true,
     },
     status: {
         type: String,
@@ -80,7 +77,12 @@ const RegistrationTableSchema = new mongoose.Schema({
     branchId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Branch",
-        required: true
+    },
+    comment: {
+        type: String,
+    },
+    commission: {
+        type: Number,
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }

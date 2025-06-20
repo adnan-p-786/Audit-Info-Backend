@@ -15,18 +15,16 @@ const LeadSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        required: true,
     },
     delete: {
         type: Boolean,
-        required: true,
     },
     address: {
         type: String,
         required: true,
     },
     mark: {
-        type: String,
+        type: Number,
         required: true,
     },
     subject_name: {

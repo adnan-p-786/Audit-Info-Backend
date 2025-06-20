@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/create',async(req,res)=>{
     try {
-        const {name,schoolId,date,sROId,sRCId,phone,cancel,address,collegeId,course,total_fee,recived_amount,service_charge,recived_service_charge,status,certificates,request_status,booking_amount,branchId}= req.body
-        if (!name ||!schoolId ||!date ||!sROId ||!sRCId ||!phone ||!cancel ||!address ||!collegeId ||!course ||!total_fee ||!recived_amount ||!service_charge ||!recived_service_charge ||!status ||!certificates ||!request_status ||!booking_amount ||!branchId)
+        const {name,agentId,schoolId,date,sROId,sRCId,phone,cancel,address,collegeId,course,total_fee,recived_amount,service_charge,recived_service_charge,status,certificates,request_status,booking_amount,branchId,comment,commission}= req.body
+        if (!name ||!agentId ||!schoolId ||!date ||!sROId ||!sRCId ||!phone ||!cancel ||!address ||!collegeId ||!course ||!total_fee ||!recived_amount ||!service_charge ||!recived_service_charge ||!status ||!certificates ||!request_status ||!booking_amount ||!branchId ||!comment ||!commission)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await RegistrationTableModel.create({name,schoolId,date,sROId,sRCId,phone,cancel,address,collegeId,course,total_fee,recived_amount,service_charge,recived_service_charge,status,certificates,request_status,booking_amount,branchId})
+        const newData = await RegistrationTableModel.create({name,agentId,schoolId,date,sROId,sRCId,phone,cancel,address,collegeId,course,total_fee,recived_amount,service_charge,recived_service_charge,status,certificates,request_status,booking_amount,branchId,comment,commission})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -24,6 +24,7 @@ router.get('/get', async (req, res) => {
         .populate('sRCId')
         .populate('collegeId')
         .populate('branchId')
+        .populate('agentId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);
