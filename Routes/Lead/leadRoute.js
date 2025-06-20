@@ -20,11 +20,11 @@ router.post('/create',async(req,res)=>{
 router.get('/get', async (req, res) => {
   try {
     // Fetch all leads
-    const leads = await LeadModel.find({ delete: false }) // assuming you want non-deleted leads
-      .populate('sRCId', 'name') // optional: populate user fields
-      .populate('sROId', 'name')
-      .populate('branchId', 'branch_name') // change fields as per your schema
-      .populate('schoolId', 'school_name');
+    const leads = await LeadModel.find()
+      .populate('sRCId')
+      .populate('sROId')
+      .populate('branchId')
+      .populate('schoolId')
 
     // Fetch all histories in one query
     const leadIds = leads.map(lead => lead._id);
