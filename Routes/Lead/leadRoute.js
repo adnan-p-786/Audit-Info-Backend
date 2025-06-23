@@ -1,20 +1,78 @@
 const express = require('express')
-const LeadModel = require ('../../models/lead/lead')
-const LeadHistoryModel = require ('../../models/lead/leadHistory')
+const LeadModel = require('../../models/lead/lead')
+const LeadHistoryModel = require('../../models/lead/leadHistory')
+const PointModel = require('../../models/Point/point')
 const router = express.Router()
 
 
-router.post('/create',async(req,res)=>{
-    try {
-        const {name,phone_number,date_of_joining,status,delete:del,address,mark,subject_name,course,sRCId,sROId,branchId,schoolId}= req.body
-        if (!name ||!phone_number ||!date_of_joining ||!status ||!del==null ||!mark ||!subject_name ||!course ||!address ||!sRCId  ||!sROId  ||!branchId ||!schoolId)
-            res.status(400).json({message: "all fields are required"})
-        const newData = await LeadModel.create({name,phone_number,date_of_joining,status,delete:del,address,mark,subject_name,course,sRCId,sROId,branchId,schoolId})
-        res.status(201).json(newData)
-    } catch (error) {
-        res.status(400).json(error)
+router.post('/create', async (req, res) => {
+  try {
+    const {
+      name, phone_number, date_of_joining, status, delete: del, address,
+      mark, subject_name, course, sRCId, sROId, branchId, schoolId
+    } = req.body;
+
+    if (
+      !name || !phone_number || !date_of_joining || !status ||
+      !mark || !subject_name || !course || !address || !branchId || !schoolId
+    ) {
+      return res.status(400).json({ message: "All fields are required" });
     }
-})
+
+    const newLead = await LeadModel.create({
+      name, phone_number, date_of_joining, status, address,
+      mark, subject_name, course, branchId, schoolId
+    });
+
+  
+    const pointEntries = [];
+
+    if (sRCId) {
+      pointEntries.push({
+        debit: 0,
+        credit: 10,
+        type: 'credit',
+        particular: `Lead (${name}) created by SRO ${sRCId}`,
+        adminUsersId: sRCId,
+        registrationTableId: newLead._id
+      });
+    }
+
+    if (sROId) {
+      pointEntries.push({
+        debit: 0,
+        credit: 5, 
+        type: 'credit',
+        particular: `Lead (${name}) created by SRO ${sROId}`,
+        adminUsersId: sROId,
+        registrationTableId: newLead._id
+      });
+    }
+
+    if (branchId) {
+      pointEntries.push({
+        debit: 0,
+        credit: 2, 
+        type: 'credit',
+        particular: `Lead under branch ${branchId}`,
+        adminUsersId: branchId,
+        registrationTableId: newLead._id
+      });
+    }
+
+    // Bulk insert all point entries
+    if (pointEntries.length > 0) {
+      await PointModel.insertMany(pointEntries);
+    }
+
+    res.status(201).json(newLead);
+
+  } catch (error) {
+    console.error('Error creating lead:', error);
+    res.status(400).json({ message: "Creation failed", error });
+  }
+});
+
 
 
 router.get('/get', async (req, res) => {
@@ -69,27 +127,27 @@ router.get('/get', async (req, res) => {
 
 
 router.put('/update/:id', async (req, res) => {
-    try {
-        const id = req.params.id
-        const updateData = await LeadModel.findOneAndUpdate({ _id: id }, req.body, { new: true })
-        res.status(200).json(updateData)
-    } catch (error) {
-        res.status(400).json(error)
-    }
+  try {
+    const id = req.params.id
+    const updateData = await LeadModel.findOneAndUpdate({ _id: id }, req.body, { new: true })
+    res.status(200).json(updateData)
+  } catch (error) {
+    res.status(400).json(error)
+  }
 })
 
 
 router.delete('/delete/:id', async (req, res) => {
-    try {
-        const id = req.params.id; 
-        const deleteData = await LeadModel.findByIdAndDelete(id);
-        if (!deleteData) {
-            return res.status(404).json({ message: "Lead not found" });
-        }
-        res.status(200).json({ message: "Lead deleted successfully", deletedLead: deleteData });
-    } catch (error) {
-        res.status(400).json(error);
+  try {
+    const id = req.params.id;
+    const deleteData = await LeadModel.findByIdAndDelete(id);
+    if (!deleteData) {
+      return res.status(404).json({ message: "Lead not found" });
     }
+    res.status(200).json({ message: "Lead deleted successfully", deletedLead: deleteData });
+  } catch (error) {
+    res.status(400).json(error);
+  }
 });
 
 

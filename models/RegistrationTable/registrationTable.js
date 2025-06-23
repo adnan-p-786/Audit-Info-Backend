@@ -16,7 +16,6 @@ const RegistrationTableSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        required: true,
     },
     sROId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,7 +25,7 @@ const RegistrationTableSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
-    phone: {
+    phone_number: {
         type: String,
         required: true,
     },
@@ -60,19 +59,16 @@ const RegistrationTableSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        required: true,
     },
     certificates: {
-        type: String,
+        type: [String],
         required: true,
     },
     request_status: {
         type: String,
-        required: true,
     },
     booking_amount: {
         type: Number,
-        required: true,
     },
     branchId: {
         type: mongoose.Schema.Types.ObjectId,

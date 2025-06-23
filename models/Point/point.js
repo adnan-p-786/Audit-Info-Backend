@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const SroPointSchema = new mongoose.Schema({
+const PointSchema = new mongoose.Schema({
     debit: {
         type: Number,
         required: true,
@@ -21,10 +21,10 @@ const SroPointSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-    sROId: {
+    adminUsersId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true,
+        required: true
     },
     registrationTableId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -35,5 +35,5 @@ const SroPointSchema = new mongoose.Schema({
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
 
-module.exports = mongoose.model('SroPoint', SroPointSchema)
+module.exports = mongoose.model('Point', PointSchema)
 
