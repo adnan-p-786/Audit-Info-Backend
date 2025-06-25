@@ -8,7 +8,7 @@ router.post('/create',async(req,res)=>{
         const {name,schoolId,phone_number,address,collegeId,course,total_fee,recived_amount,certificates,comment,commission}= req.body
         if (!name ||!schoolId ||!phone_number ||!address ||!collegeId ||!course ||!total_fee ||!recived_amount ||!certificates ||!comment ||!commission)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await RegistrationTableModel.create({name,schoolId,phone_number,address,collegeId,course,total_fee,recived_amount,certificates,comment,commission})
+        const newData = await RegistrationTableModel.create({name,schoolId,phone_number,address,collegeId,course,total_fee,recived_amount,certificates,comment,commission,status:"registered"})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)

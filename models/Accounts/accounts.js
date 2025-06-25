@@ -3,29 +3,29 @@ const mongoose = require('mongoose')
 const AccountsSchema = new mongoose.Schema({
     debit: {
         type: Number,
-        required: true,
     },
     credit: {
         type: Number,
-        required: true,
     },
     type: {
         type: String,
-        required: true,
-    },
-    branchId: {
-       type: mongoose.Schema.Types.ObjectId,
-        ref: "Branch",
         required: true
     },
-    date: {
-        type: Date,
-        default: Date.now,
+    amount_type: {
+        type: String,
+        required: true
+    },
+    branchId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Branch"
     },
     particularId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Particular",
-        required: true
+        ref: "Particular"
+    },
+    registerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "RegistrationTable"
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }

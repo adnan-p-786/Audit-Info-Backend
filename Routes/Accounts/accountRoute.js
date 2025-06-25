@@ -3,12 +3,12 @@ const AccountsModel = require ('../../models/Accounts/accounts')
 const router = express.Router()
 
 
-router.post('/post',async(req,res)=>{
+router.post('/create',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,debit,credit,type,branchId,date,particularId}= req.body
-        if (!createdAt || !updatedAt ||!debit ||!credit ||!type ||!branchId ||!date ||!particularId)
+        const {type,amount_type}= req.body
+        if (!type ||!amount_type )
             return res.status(400).json({message: "all fields are required"})
-        const newData = await AccountsModel.create({createdAt,updatedAt,debit,credit,type,branchId,date,particularId})
+        const newData = await AccountsModel.create({type,amount_type})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
