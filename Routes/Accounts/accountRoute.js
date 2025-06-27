@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/create',async(req,res)=>{
     try {
-        const {type,amount_type}= req.body
-        if (!type ||!amount_type )
+        const {amount_type,recieved_amount}= req.body
+        if (!amount_type||!recieved_amount)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await AccountsModel.create({type,amount_type})
+        const newData = await AccountsModel.create({amount_type,recieved_amount})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)

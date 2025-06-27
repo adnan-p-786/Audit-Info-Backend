@@ -9,6 +9,9 @@ const AccountsSchema = new mongoose.Schema({
     },
     type: {
         type: String,
+    },
+    recieved_amount: {
+        type: Number,
         required: true
     },
     amount_type: {

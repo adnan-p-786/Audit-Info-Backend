@@ -3,6 +3,8 @@ const LeadModel = require('../../models/lead/lead')
 const LeadHistoryModel = require('../../models/lead/leadHistory')
 const PointModel = require('../../models/Point/point')
 const router = express.Router()
+const xlsx = require('xlsx');
+const mongoose = require('mongoose');
 
 
 router.post('/create', async (req, res) => {
@@ -70,6 +72,49 @@ router.post('/create', async (req, res) => {
   } catch (error) {
     console.error('Error creating lead:', error);
     res.status(400).json({ message: "Creation failed", error });
+  }
+});
+
+router.post("/uploadEXCEL", async (c) => {
+  try {
+    const formData = await c.req.formData();
+    const file = formData.get("file");
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    const xlfile = xlsx.read(buffer);
+    let xldata = [];
+
+    const sheets = xlfile.SheetNames;
+
+    for (let i = 0; i < sheets.length; i++) {
+      const temp = xlsx.utils.sheet_to_json(xlfile.Sheets[sheets[i]]);
+      temp.forEach((res) => {
+        // Optional: Transform input if necessary
+        // For example: Convert date strings to Date objects, etc.
+        xldata.push({
+          name: res.name,
+          phone_number: res.phone_number,
+          date_of_joining: new Date(res.date_of_joining),
+          status: res.status || 'pending',
+          delete: res.delete === 'true' || res.delete === true, // ensure Boolean
+          address: res.address,
+          mark: Number(res.mark),
+          subject_name: res.subject_name,
+          course: res.course,
+          sRCId: res.sRCId ? new mongoose.Types.ObjectId(res.sRCId) : undefined,
+          sROId: res.sROId ? new mongoose.Types.ObjectId(res.sROId) : undefined,
+          branchId: new mongoose.Types.ObjectId(res.branchId),
+          schoolId: new mongoose.Types.ObjectId(res.schoolId),
+        });
+      });
+    }
+
+    const result = await Lead.insertMany(xldata);
+
+    return c.json({ success: true, inserted: result.length, data: result });
+  } catch (error) {
+    console.error(error);
+    return c.json({ error: error.message }, 400);
   }
 });
 
