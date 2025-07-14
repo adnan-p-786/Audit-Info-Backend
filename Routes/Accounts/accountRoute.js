@@ -1,19 +1,48 @@
 const express = require('express')
 const AccountsModel = require ('../../models/Accounts/accounts')
 const router = express.Router()
+const RecievedAmountModel = require('../../models/Recieved Amount/recivedAmount')
 
 
-router.post('/create',async(req,res)=>{
+router.post('/create', async (req, res) => {
     try {
-        const {amount_type,recieved_amount}= req.body
-        if (!amount_type||!recieved_amount)
-            return res.status(400).json({message: "all fields are required"})
-        const newData = await AccountsModel.create({amount_type,recieved_amount})
-        res.status(201).json(newData)
+        const { amount_type, recieved_amount } = req.body;
+
+        if (!amount_type || recieved_amount == null || isNaN(recieved_amount)) {
+            return res.status(400).json({ message: "All fields are required and amount must be a number" });
+        }
+
+        const newAccount = await AccountsModel.create({ amount_type, recieved_amount });
+
+        const newRecievedAmount = await RecievedAmountModel.create({
+            amount: recieved_amount,
+            amount_type
+        });
+
+        res.status(201).json({
+            account: newAccount,
+            recievedAmount: newRecievedAmount,
+        });
+
     } catch (error) {
-        res.status(400).json(error)
+        res.status(400).json({ error: error.message });
     }
-})
+});
+
+
+
+
+// router.post('/create',async(req,res)=>{
+//     try {
+//         const {amount_type,recieved_amount}= req.body
+//         if (!amount_type||!recieved_amount)
+//             return res.status(400).json({message: "all fields are required"})
+//         const newData = await AccountsModel.create({amount_type,recieved_amount})
+//         res.status(201).json(newData)
+//     } catch (error) {
+//         res.status(400).json(error)
+//     }
+// })
 
 
 router.get('/get', async (req, res) => {

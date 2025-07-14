@@ -3,24 +3,19 @@ const mongoose = require('mongoose')
 const RecievedAmountSchema = new mongoose.Schema({
     amount: {
         type: Number,
-        required: true,
     },
     amount_type: {
         type: String,
-        required: true,
     },
     collected: {
         type: Boolean,
-        required: true,
     },
     date: {
         type: Date,
-        required: true,
     },
     registrationTableId: {
-       type: mongoose.Schema.Types.ObjectId,
-        ref: "RegistrationTable",
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "RegistrationTable"
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
