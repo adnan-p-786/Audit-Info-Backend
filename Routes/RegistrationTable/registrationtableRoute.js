@@ -3,6 +3,18 @@ const RegistrationTableModel = require ('../../models/RegistrationTable/registra
 const router = express.Router()
 
 
+router.post('/create-service',async(req,res)=>{
+    try {
+        const {service_charge}= req.body
+        if (!service_charge)
+            return res.status(400).json({message: "service charge required"})
+        const newData = await RegistrationTableModel.create({service_charge})
+        res.status(201).json(newData)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+})
+
 router.post('/create',async(req,res)=>{
     try {
         const {name,schoolId,phone_number,address,collegeId,course,total_fee,recived_amount,certificates,comment,commission}= req.body
