@@ -12,11 +12,9 @@ const AccountsSchema = new mongoose.Schema({
     },
     recieved_amount: {
         type: Number,
-        required: true
     },
     amount_type: {
         type: String,
-        required: true
     },
     branchId: {
         type: mongoose.Schema.Types.ObjectId,
