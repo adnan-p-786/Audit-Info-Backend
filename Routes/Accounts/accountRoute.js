@@ -2,6 +2,7 @@ const express = require('express')
 const AccountsModel = require ('../../models/Accounts/accounts')
 const router = express.Router()
 const RecievedAmountModel = require('../../models/Recieved Amount/recivedAmount')
+const RegistrationtableModel = require('../../models/RegistrationTable/registrationTable')
 
 
 router.post('/create', async (req, res) => {
@@ -34,10 +35,20 @@ router.post('/create', async (req, res) => {
 
 router.post('/booking',async(req,res)=>{
     try {
-        const {debit,amount_type,particularId}= req.body
+        const {debit,amount_type,particularId ,registerId}= req.body
         if (!debit||!amount_type||!particularId)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await AccountsModel.create({debit,amount_type,particularId})
+        const newData = await AccountsModel.create({debit,amount_type,particularId,registerId})
+
+        const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
+            registerId,
+            { booking_amount: debit }
+        );
+
+        if (!updatedRegistration) {
+            return res.status(404).json({ message: "Registration record not found" });
+        }
+
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
