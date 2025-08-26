@@ -14,14 +14,9 @@ const ExpenseSchema = new mongoose.Schema({
         ref: "Particular",
         required: true
     },
-    date: {
-        type: Date,
-        default: Date.now,
-    },
     branchId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Branch',
-        required: true
+        ref: 'Branch'
     },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }

@@ -3,12 +3,12 @@ const expenseModel = require ('../../models/Expense/expense')
 const router = express.Router()
 
 
-router.post('/post',async(req,res)=>{
+router.post('/create',async(req,res)=>{
     try {
-        const {createdAt,updatedAt,amount,comment,particularId,date,branchId}= req.body
-        if (!createdAt || !updatedAt ||!amount ||!comment ||!particularId ||!date ||!branchId)
+        const {amount,comment,particularId}= req.body
+        if (!amount ||!comment ||!particularId)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await expenseModel.create({createdAt,updatedAt,amount,comment,particularId,date,branchId})
+        const newData = await expenseModel.create({amount,comment,particularId})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -44,9 +44,9 @@ router.delete('/delete/:id', async (req, res) => {
         const id = req.params.id; 
         const deleteData = await expenseModel.findByIdAndDelete(id);
         if (!deleteData) {
-            return res.status(404).json({ message: "Particulars not found" });
+            return res.status(404).json({ message: "expense not found" });
         }
-        res.status(200).json({ message: "Particulars deleted successfully", deletedAccountant: deleteData });
+        res.status(200).json({ message: "expense deleted successfully", deletedAccountant: deleteData });
     } catch (error) {
         res.status(400).json(error);
     }
