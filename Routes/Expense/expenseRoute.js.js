@@ -1,5 +1,6 @@
 const express = require('express')
 const expenseModel = require ('../../models/Expense/expense')
+const accountModel = require ('../../models/Accounts/accounts')
 const router = express.Router()
 
 
@@ -9,7 +10,17 @@ router.post('/create',async(req,res)=>{
         if (!amount ||!comment ||!particularId)
             return res.status(400).json({message: "all fields are required"})
         const newData = await expenseModel.create({amount,comment,particularId})
-        res.status(201).json(newData)
+
+        
+        const newAccount = await accountModel.create({
+            debit: amount,
+            type: "expense"
+        })
+
+         res.status(201).json({
+            expense: newData,
+            account: newAccount
+        })
     } catch (error) {
         res.status(400).json(error)
     }
@@ -20,7 +31,7 @@ router.get('/get', async (req, res) => {
     try {
         const data = await expenseModel.find()
         .populate('particularId')
-        .populate('branchId')
+        // .populate('branchId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);
