@@ -39,29 +39,53 @@ router.get('/get', async (req, res) => {
 });
 
 
-router.put('/put/:id', async (req, res) => {
-    try {
-        const id = req.params.id
-        const updateData = await expenseModel.findOneAndUpdate({ _id: id }, req.body, { new: true })
-        res.status(200).json(updateData)
-    } catch (error) {
-        res.status(400).json(error)
-    }
-})
+// router.put('/put/:id', async (req, res) => {
+//     try {
+//         const id = req.params.id
+//         const updateData = await expenseModel.findOneAndUpdate({ _id: id }, req.body, { new: true })
+//         res.status(200).json(updateData)
+//     } catch (error) {
+//         res.status(400).json(error)
+//     }
+// })
 
 
 router.delete('/delete/:id', async (req, res) => {
-    try {
-        const id = req.params.id; 
-        const deleteData = await expenseModel.findByIdAndDelete(id);
-        if (!deleteData) {
-            return res.status(404).json({ message: "expense not found" });
-        }
-        res.status(200).json({ message: "expense deleted successfully", deletedAccountant: deleteData });
-    } catch (error) {
-        res.status(400).json(error);
+  try {
+    const id = req.params.id; 
+
+    // Delete expense
+    const deleteData = await expenseModel.findByIdAndDelete(id);
+    if (!deleteData) {
+      return res.status(404).json({ message: "expense not found" });
     }
+
+    // Delete related account (using particularId)
+    await accountModel.deleteOne({ particularId: deleteData.particularId });
+
+    res.status(200).json({ 
+      message: "expense & account deleted successfully", 
+      deletedExpense: deleteData 
+    });
+  } catch (error) {
+    console.error("❌ Delete error:", error);
+    res.status(400).json({ error: error.message });
+  }
 });
+
+
+// router.delete('/delete/:id', async (req, res) => {
+//     try {
+//         const id = req.params.id; 
+//         const deleteData = await expenseModel.findByIdAndDelete(id);
+//         if (!deleteData) {
+//             return res.status(404).json({ message: "expense not found" });
+//         }
+//         res.status(200).json({ message: "expense deleted successfully", deletedAccountant: deleteData });
+//     } catch (error) {
+//         res.status(400).json(error);
+//     }
+// });
 
 
 
