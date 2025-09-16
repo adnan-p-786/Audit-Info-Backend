@@ -14,7 +14,8 @@ router.post('/create',async(req,res)=>{
         
         const newAccount = await accountModel.create({
             debit: amount,
-            type: "expense"
+            type: "expense",
+            particularId: particularId
         })
 
          res.status(201).json({
@@ -39,17 +40,6 @@ router.get('/get', async (req, res) => {
 });
 
 
-// router.put('/put/:id', async (req, res) => {
-//     try {
-//         const id = req.params.id
-//         const updateData = await expenseModel.findOneAndUpdate({ _id: id }, req.body, { new: true })
-//         res.status(200).json(updateData)
-//     } catch (error) {
-//         res.status(400).json(error)
-//     }
-// })
-
-
 router.delete('/delete/:id', async (req, res) => {
   try {
     const id = req.params.id; 
@@ -61,7 +51,7 @@ router.delete('/delete/:id', async (req, res) => {
     }
 
     // Delete related account (using particularId)
-    await accountModel.deleteOne({ particularId: deleteData.particularId });
+    await accountModel.deleteMany({particularId: new mongoose.Types.ObjectId(deleteData.particularId)});
 
     res.status(200).json({ 
       message: "expense & account deleted successfully", 
