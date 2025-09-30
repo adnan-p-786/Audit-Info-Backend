@@ -28,6 +28,10 @@ const AccountsSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "RegistrationTable"
     },
+    expenseId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Expense'
+    },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
