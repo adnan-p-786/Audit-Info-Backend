@@ -1,19 +1,32 @@
 const express = require('express')
 const RegistrationTableModel = require ('../../models/RegistrationTable/registrationTable')
+const collegeAccounts = require('../../models/College Accounts/collegeAccounts')
 const router = express.Router()
 
 
-router.post('/create-service',async(req,res)=>{
+router.post('/create-service/:id',async(req,res)=>{
     try {
         const {service_charge}= req.body
         if (!service_charge)
             return res.status(400).json({message: "service charge required"})
-        const newData = await RegistrationTableModel.create({service_charge})
+
+        const newData = await RegistrationTableModel.findByIdAndUpdate(
+            req.params.id,
+            {service_charge},
+            {new: true}
+        )
+
+        const collegeaccount = await collegeAccounts.create({
+            credit: service_charge,
+            collegeId: req.params.id         
+        })
+            
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
     }
 })
+
 
 router.post('/create',async(req,res)=>{
     try {
