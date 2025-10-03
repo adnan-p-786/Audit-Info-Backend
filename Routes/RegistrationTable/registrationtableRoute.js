@@ -15,10 +15,10 @@ router.post('/create-service/:id',async(req,res)=>{
             {service_charge},
             {new: true}
         )
-
+        
         const collegeaccount = await collegeAccounts.create({
             credit: service_charge,
-            collegeId: req.params.id         
+            collegeId: newData.collegeId       
         })
             
         res.status(201).json(newData)
