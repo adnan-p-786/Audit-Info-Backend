@@ -1,11 +1,11 @@
 const express = require('express')
-const AccountsModel = require ('../../models/Accounts/accounts')
+const AccountsModel = require('../../models/Accounts/accounts')
 const router = express.Router()
 const RecievedAmountModel = require('../../models/Recieved Amount/recivedAmount')
 const RegistrationtableModel = require('../../models/RegistrationTable/registrationTable')
 
 
-router.post('/create', async (req, res) => {
+router.post('/create/:id', async (req, res) => {
     try {
         const { amount_type, recieved_amount } = req.body;
 
@@ -20,6 +20,11 @@ router.post('/create', async (req, res) => {
             amount_type
         });
 
+        const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "foradmmission" },
+            { new: true }
+        );
         res.status(201).json({
             account: newAccount,
             recievedAmount: newRecievedAmount,
@@ -33,21 +38,20 @@ router.post('/create', async (req, res) => {
 
 
 
-router.post('/booking',async(req,res)=>{
+router.post('/booking', async (req, res) => {
     try {
-        const {debit,amount_type,particularId ,registerId}= req.body
-        if (!debit||!amount_type||!particularId)
-            return res.status(400).json({message: "all fields are required"})
-        const newData = await AccountsModel.create({debit,amount_type,particularId,registerId})
+        const { debit, amount_type, particularId } = req.body
+        if (!debit || !amount_type || !particularId)
+            return res.status(400).json({ message: "all fields are required" })
+        const newData = await AccountsModel.create({ debit, amount_type, particularId })
 
-        const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
-            registerId,
-            { booking_amount: debit }
-        );
+        // const updatedRegistration = await RegistrationtableModel.findOne(
+        //     { booking_amount: debit }
+        // );
 
-        if (!updatedRegistration) {
-            return res.status(404).json({ message: "Registration record not found" });
-        }
+        // if (!updatedRegistration) {
+        //     return res.status(404).json({ message: "Registration record not found" });
+        // }
 
         res.status(201).json(newData)
     } catch (error) {
@@ -59,8 +63,8 @@ router.post('/booking',async(req,res)=>{
 router.get('/get', async (req, res) => {
     try {
         const data = await AccountsModel.find()
-        .populate('branchId')
-        .populate('particularId')
+            .populate('branchId')
+            .populate('particularId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);
@@ -81,7 +85,7 @@ router.put('/put/:id', async (req, res) => {
 
 router.delete('/delete/:id', async (req, res) => {
     try {
-        const id = req.params.id; 
+        const id = req.params.id;
         const deleteData = await AccountsModel.findByIdAndDelete(id);
         if (!deleteData) {
             return res.status(404).json({ message: "Account not found" });
