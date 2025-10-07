@@ -10,18 +10,19 @@ router.post('/create-service/:id',async(req,res)=>{
         if (!service_charge)
             return res.status(400).json({message: "service charge required"})
 
-        const newData = await RegistrationTableModel.findByIdAndUpdate(
+        const updateData = await RegistrationTableModel.findByIdAndUpdate(
             req.params.id,
+            {status: "forbooking"},
             {service_charge},
             {new: true}
         )
         
         const collegeaccount = await collegeAccounts.create({
             credit: service_charge,
-            collegeId: newData.collegeId       
+            collegeId: updateData.collegeId       
         })
             
-        res.status(201).json(newData)
+        res.status(201).json(updateData)
     } catch (error) {
         res.status(400).json(error)
     }

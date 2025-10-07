@@ -38,20 +38,22 @@ router.post('/create/:id', async (req, res) => {
 
 
 
-router.post('/booking', async (req, res) => {
+router.post('/booking/:id', async (req, res) => {
     try {
         const { debit, amount_type, particularId } = req.body
         if (!debit || !amount_type || !particularId)
             return res.status(400).json({ message: "all fields are required" })
         const newData = await AccountsModel.create({ debit, amount_type, particularId })
 
-        // const updatedRegistration = await RegistrationtableModel.findOne(
-        //     { booking_amount: debit }
-        // );
+        const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
+            req.params.id,
+            {status: "forbookingconfirmation"},
+            { booking_amount: debit }
+        );
 
-        // if (!updatedRegistration) {
-        //     return res.status(404).json({ message: "Registration record not found" });
-        // }
+        if (!updatedRegistration) {
+            return res.status(404).json({ message: "Booking record not found" });
+        }
 
         res.status(201).json(newData)
     } catch (error) {
