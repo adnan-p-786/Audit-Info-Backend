@@ -35,6 +35,23 @@ router.post('/create/:id', async (req, res) => {
     }
 });
 
+router.put('/confirm/:id', async (req, res) => {
+    try {
+        const bookingconfirmation = await RegistrationtableModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "foracknowledgment" },
+            { new: true }
+        );
+
+        if (!bookingconfirmation) {
+            return res.status(404).json({ message: "Record not found" });
+        }
+
+        res.status(200).json({ message: "Booking confirmed successfully", bookingconfirmation });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
 
 
