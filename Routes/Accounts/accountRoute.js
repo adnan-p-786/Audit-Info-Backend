@@ -3,6 +3,7 @@ const AccountsModel = require('../../models/Accounts/accounts')
 const router = express.Router()
 const RecievedAmountModel = require('../../models/Recieved Amount/recivedAmount')
 const RegistrationtableModel = require('../../models/RegistrationTable/registrationTable')
+const particularModel = require('../../models/Particulars/particulars')
 
 
 router.post('/create/:id', async (req, res) => {
@@ -35,6 +36,81 @@ router.post('/create/:id', async (req, res) => {
     }
 });
 
+// router.post('/addamount', async (req, res) => {
+//     try {
+//         const { credit, amount_type } = req.body;
+
+//         if (!amount_type || !credit) {
+//             return res.status(400).json({
+//                 message: "All fields are required and credit must be provided"
+//             });
+//         }
+
+//         const particular = await particularModel.findOne({ name: "Add Amount" });
+
+//         if (!particular) {
+//             return res.status(404).json({ message: "Particular 'Add Amount' not found" });
+//         }
+
+//         const newAccount = await AccountsModel.create({
+//             amount_type,
+//             credit,
+//             particular: particular._id
+//         });
+
+//         res.status(201).json({
+//             message: "Amount added successfully and linked with particular",
+//             account: newAccount,
+//             particular
+//         });
+
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: error.message });
+//     }
+// });
+
+router.post('/addamount/:id', async (req, res) => {
+    try {
+        const { credit, amount_type } = req.body;
+
+        if (!amount_type || !credit) {
+            return res.status(400).json({
+                message: "All fields are required and credit must be provided"
+            });
+        }
+
+        const particular = await particularModel.findOne({ name: "Add Amount" });
+
+        if (!particular) {
+            return res.status(404).json({ message: "Particular 'Add Amount' not found" });
+        }
+
+        const newAccount = await AccountsModel.create({
+            amount_type,
+            credit,
+            particular: particular._id
+        });
+
+        res.status(201).json({
+            message: "Amount added successfully and linked with particular",
+            account: newAccount,
+            particular
+        });
+
+        const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "foramountcollection" },
+            { new: true }
+        );
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 router.put('/confirm/:id', async (req, res) => {
     try {
         const bookingconfirmation = await RegistrationtableModel.findByIdAndUpdate(
@@ -64,7 +140,7 @@ router.post('/booking/:id', async (req, res) => {
 
         const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
             req.params.id,
-            {status: "forbookingconfirmation"},
+            { status: "forbookingconfirmation" },
             { booking_amount: debit }
         );
 

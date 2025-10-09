@@ -31,10 +31,10 @@ router.post('/create-service/:id',async(req,res)=>{
 
 router.post('/create',async(req,res)=>{
     try {
-        const {name,schoolId,phone_number,address,collegeId,course,total_fee,recived_amount,certificates,comment,commission,booking_amount}= req.body
-        if (!name ||!schoolId ||!phone_number ||!address ||!collegeId ||!course ||!total_fee ||!recived_amount ||!certificates ||!comment ||!commission ||!booking_amount)
+        const {name,schoolId,phone_number,address,collegeId,course,total_fee,recived_amount,certificates,comment,commission,booking_amount,agentId}= req.body
+        if (!name ||!schoolId ||!phone_number ||!address ||!collegeId ||!course ||!total_fee ||!recived_amount ||!certificates ||!comment ||!commission ||!booking_amount||agentId)
             return res.status(400).json({message: "all fields are required"})
-        const newData = await RegistrationTableModel.create({name,schoolId,phone_number,address,collegeId,course,total_fee,recived_amount,certificates,comment,commission,booking_amount,status:"registered"})
+        const newData = await RegistrationTableModel.create({name,schoolId,phone_number,address,collegeId,course,total_fee,recived_amount,certificates,comment,commission,booking_amount,agentId,status:"registered"})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
