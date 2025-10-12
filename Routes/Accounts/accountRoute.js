@@ -36,39 +36,20 @@ router.post('/create/:id', async (req, res) => {
     }
 });
 
-// router.post('/addamount', async (req, res) => {
-//     try {
-//         const { credit, amount_type } = req.body;
+router.post('/collect-Payment/:id', async (req, res) => {
+    try {
 
-//         if (!amount_type || !credit) {
-//             return res.status(400).json({
-//                 message: "All fields are required and credit must be provided"
-//             });
-//         }
+        const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "collectedPayment" },
+            { new: true }
+        );
 
-//         const particular = await particularModel.findOne({ name: "Add Amount" });
-
-//         if (!particular) {
-//             return res.status(404).json({ message: "Particular 'Add Amount' not found" });
-//         }
-
-//         const newAccount = await AccountsModel.create({
-//             amount_type,
-//             credit,
-//             particular: particular._id
-//         });
-
-//         res.status(201).json({
-//             message: "Amount added successfully and linked with particular",
-//             account: newAccount,
-//             particular
-//         });
-
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: error.message });
-//     }
-// });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
 
 router.post('/addamount/:id', async (req, res) => {
     try {
