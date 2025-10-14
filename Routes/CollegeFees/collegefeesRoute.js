@@ -32,7 +32,7 @@ router.post('/create/:id', async (req, res) => {
 
 router.get('/get/:id', async (req, res) => {
     try {
-        const data = await CollegeFeesModel.find({registrationId:req.params.id})
+        const data = await CollegeFeesModel.find({registrationId: req.params.registrationId})
             .populate('particularId')
             .populate('registrationId')
         res.status(200).json(data);
@@ -56,7 +56,7 @@ router.get('/get-unpaid', async (req, res) => {
 router.put('/put/:id', async (req, res) => {
     try {
         const id = req.params.id
-        const updateData = await CollegeFeesModel.findOneAndUpdate({ _id: id }, req.body, { new: true })
+        const updateData = await CollegeFeesModel.findByIdAndUpdate({ _id: id }, req.body, { new: true })
         res.status(200).json(updateData)
     } catch (error) {
         res.status(400).json(error)

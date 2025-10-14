@@ -18,9 +18,6 @@ const CollegeFeesSchema = new mongoose.Schema({
     directPay: {
         type: Boolean,
     },
-    paid:{
-        type: Boolean,
-    }
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
