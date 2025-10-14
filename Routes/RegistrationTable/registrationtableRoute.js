@@ -32,7 +32,7 @@ router.post('/create-service/:id',async(req,res)=>{
 router.post('/create',async(req,res)=>{
     try {
         const {name,schoolId,phone_number,address,collegeId,course,total_fee,recived_amount,certificates,comment,commission,booking_amount,agentId}= req.body
-        if (!name ||!schoolId ||!phone_number ||!address ||!collegeId ||!course ||!total_fee ||!recived_amount ||!certificates ||!comment ||!commission ||!booking_amount||agentId)
+        if (!name ||!schoolId ||!phone_number ||!address ||!collegeId ||!course ||!total_fee ||!recived_amount ||!certificates ||!comment ||!commission ||!booking_amount||!agentId)
             return res.status(400).json({message: "all fields are required"})
         const newData = await RegistrationTableModel.create({name,schoolId,phone_number,address,collegeId,course,total_fee,recived_amount,certificates,comment,commission,booking_amount,agentId,status:"registered"})
         res.status(201).json(newData)

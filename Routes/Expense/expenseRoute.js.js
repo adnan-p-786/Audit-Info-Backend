@@ -64,20 +64,4 @@ router.delete('/delete/:id', async (req, res) => {
 });
 
 
-
-// router.delete('/delete/:id', async (req, res) => {
-//     try {
-//         const id = req.params.id; 
-//         const deleteData = await expenseModel.findByIdAndDelete(id);
-//         if (!deleteData) {
-//             return res.status(404).json({ message: "expense not found" });
-//         }
-//         res.status(200).json({ message: "expense deleted successfully", deletedexpense: deleteData });
-//     } catch (error) {
-//         res.status(400).json(error);
-//     }
-// });
-
-
-
 module.exports = router
