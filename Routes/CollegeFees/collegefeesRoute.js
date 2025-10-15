@@ -6,12 +6,12 @@ const router = express.Router()
 
 router.post('/create/:id', async (req, res) => {
     try {
-        const { particularId, amount, amount_type, directPay } = req.body
+        const { particularId, amount, amount_type, directPay , collegeId} = req.body
         const registrationId = req.params.id
-        if (!particularId || !amount || !amount_type || directPay === undefined)
+        if (!particularId || !amount || !amount_type || directPay === undefined ||!collegeId)
             return res.status(400).json({ message: "all fields are required" })
 
-        const newData = await CollegeFeesModel.create({ particularId, amount, amount_type, directPay,registrationId})
+        const newData = await CollegeFeesModel.create({ particularId, amount, amount_type, directPay,registrationId,collegeId})
 
         if (directPay === false) {
             const account = await AccountsModel.create({
@@ -19,6 +19,7 @@ router.post('/create/:id', async (req, res) => {
                 amount_type: amount_type,
                 particularId: particularId,
                 registrationId: registrationId,
+                collegeId: collegeId,
             })
         }
 
@@ -32,9 +33,10 @@ router.post('/create/:id', async (req, res) => {
 
 router.get('/get/:id', async (req, res) => {
     try {
-        const data = await CollegeFeesModel.find({registrationId: req.params.registrationId})
+        const data = await CollegeFeesModel.find({registrationId: req.params.id})
             .populate('particularId')
             .populate('registrationId')
+            .populate('collegeId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);
@@ -46,6 +48,7 @@ router.get('/get-unpaid', async (req, res) => {
         const data = await CollegeFeesModel.find({ directPay: false })
             .populate('particularId')
             .populate('registrationId')
+            .populate('collegeId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);

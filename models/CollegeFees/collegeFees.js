@@ -9,6 +9,10 @@ const CollegeFeesSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "RegistrationTable",
     },
+    collegeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CollegeManagement",
+    },
     amount: {
         type: Number,
     },

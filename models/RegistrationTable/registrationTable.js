@@ -73,6 +73,9 @@ const RegistrationTableSchema = new mongoose.Schema({
     commission: {
         type: Number,
     },
+    collectionamount: {
+        type: Number,
+    },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });

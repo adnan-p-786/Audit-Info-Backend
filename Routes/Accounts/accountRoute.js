@@ -6,6 +6,53 @@ const RegistrationtableModel = require('../../models/RegistrationTable/registrat
 const particularModel = require('../../models/Particulars/particulars')
 
 
+router.post('/servicecharge/:id', async (req, res) => {
+    try {
+        const { credit, amount_type } = req.body;
+
+        if (!credit || !amount_type) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "foramountcollection", recived_amount: credit },
+            { new: true }
+        );
+
+        res.status(201).json();
+
+
+
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+router.post('/addamount/:id', async (req, res) => {
+    try {
+        const { credit, amount_type } = req.body;
+
+        if (!amount_type || !credit) {
+            return res.status(400).json({message: "All fields are required" });
+        }
+
+        const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "foramountcollection", recived_amount: credit },
+            { new: true }
+        );
+
+        res.status(201).json();
+
+
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 router.post('/create/:id', async (req, res) => {
     try {
         const { amount_type, recieved_amount } = req.body;
@@ -45,22 +92,6 @@ router.post('/collect-Payment/:id', async (req, res) => {
             { new: true }
         );
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-router.post('/addamount/:id', async (req, res) => {
-    try {
-        const { credit, amount_type } = req.body;
-
-        if (!amount_type || !credit) {
-            return res.status(400).json({
-                message: "All fields are required and credit must be provided"
-            });
-        }
-
         const particular = await particularModel.findOne({ name: "Add Amount" });
 
         if (!particular) {
@@ -70,7 +101,8 @@ router.post('/addamount/:id', async (req, res) => {
         const newAccount = await AccountsModel.create({
             amount_type,
             credit,
-            particular: particular._id
+            particular: particular._id,
+            registerId: req.params.id
         });
 
         res.status(201).json({
@@ -79,17 +111,12 @@ router.post('/addamount/:id', async (req, res) => {
             particular
         });
 
-        const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
-            req.params.id,
-            { status: "foramountcollection" },
-            { new: true }
-        );
-
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
     }
 });
+
 
 
 router.put('/confirm/:id', async (req, res) => {
@@ -134,6 +161,18 @@ router.post('/booking/:id', async (req, res) => {
         res.status(400).json(error)
     }
 })
+
+router.get('/get-servicecharge/:id', async (req, res) => {
+    try {
+        const data = await RegistrationtableModel.find({registrationId: req.params.id})
+            .populate('particularId')
+            .populate('registrationId')
+            .populate('collegeId')
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(400).json(error);
+    }
+});
 
 
 router.get('/get', async (req, res) => {
