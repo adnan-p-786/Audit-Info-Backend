@@ -45,6 +45,9 @@ const RegistrationTableSchema = new mongoose.Schema({
     recived_amount: {
         type: Number,
     },
+    amount_type:{
+        type: String,
+    },
     service_charge: {
         type: Number,
     },

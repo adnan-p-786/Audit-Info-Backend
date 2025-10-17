@@ -9,14 +9,16 @@ const particularModel = require('../../models/Particulars/particulars')
 router.post('/servicecharge/:id', async (req, res) => {
     try {
         const { credit, amount_type } = req.body;
-
+        const registrationId = req.params.id
         if (!credit || !amount_type) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
+        // const newAccount = await AccountsModel.create({ amount_type, credit, registrationId });
+
         const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
             req.params.id,
-            { status: "foramountcollection", recived_amount: credit },
+            { status: "forServicecollection", recived_amount: credit , amount_type: amount_type },
             { new: true }
         );
 
@@ -34,12 +36,12 @@ router.post('/addamount/:id', async (req, res) => {
         const { credit, amount_type } = req.body;
 
         if (!amount_type || !credit) {
-            return res.status(400).json({message: "All fields are required" });
+            return res.status(400).json({ message: "All fields are required" });
         }
 
         const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
             req.params.id,
-            { status: "foramountcollection", recived_amount: credit },
+            { status: "foramountcollection", recived_amount: credit, amount_type: amount_type },
             { new: true }
         );
 
@@ -52,6 +54,28 @@ router.post('/addamount/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+
+
+router.get('/get-servicecharge/:id', async (req, res) => {
+    try {
+        const registerId = RegistrationtableModel.find().select('_id');
+        // console.log({registerId});
+        const particularId = await particularModel.findOne({ name: "Service Charge" }).select('_id');
+        // console.log({particularId});
+        
+        const data = await AccountsModel.find({ registerId: req.params.id, particularId:particularId._id })
+            .populate('registrationId')
+            .populate('particularId')
+            console.log({data});
+
+       return res.status(200).json(data);
+    } catch (error) {
+        res.status(400).json(error);
+    }
+});
+
+
 
 router.post('/create/:id', async (req, res) => {
     try {
@@ -85,6 +109,16 @@ router.post('/create/:id', async (req, res) => {
 
 router.post('/collect-Payment/:id', async (req, res) => {
     try {
+        let particular;
+        const registered = await RegistrationtableModel.findById(req.params.id);
+        if (!registered) {
+            return res.status(404).json({ message: "Registration record not found" });
+        } else if (registered.status == "foramountcollection") {
+            particular = await particularModel.findOne({ name: "Add Amount" });
+
+        } else if (registered.status == "forServicecollection") {
+            particular = await particularModel.findOne({ name: "Service Charge" });
+        }
 
         const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
             req.params.id,
@@ -92,15 +126,14 @@ router.post('/collect-Payment/:id', async (req, res) => {
             { new: true }
         );
 
-        const particular = await particularModel.findOne({ name: "Add Amount" });
 
         if (!particular) {
             return res.status(404).json({ message: "Particular 'Add Amount' not found" });
         }
 
         const newAccount = await AccountsModel.create({
-            amount_type,
-            credit,
+            credit: registered.recived_amount,
+            amount_type: registered.amount_type,
             particular: particular._id,
             registerId: req.params.id
         });
@@ -161,18 +194,6 @@ router.post('/booking/:id', async (req, res) => {
         res.status(400).json(error)
     }
 })
-
-router.get('/get-servicecharge/:id', async (req, res) => {
-    try {
-        const data = await RegistrationtableModel.find({registrationId: req.params.id})
-            .populate('particularId')
-            .populate('registrationId')
-            .populate('collegeId')
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(400).json(error);
-    }
-});
 
 
 router.get('/get', async (req, res) => {
