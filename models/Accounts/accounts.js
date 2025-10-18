@@ -24,7 +24,7 @@ const AccountsSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Particular"
     },
-    registerId: {
+    registrationId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "RegistrationTable"
     },

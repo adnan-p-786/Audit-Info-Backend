@@ -18,7 +18,7 @@ router.post('/create/:id', async (req, res) => {
                 debit: amount,
                 amount_type: amount_type,
                 particularId: particularId,
-                registrationId: registrationId,
+                registerId: registrationId,
                 collegeId: collegeId,
             })
         }

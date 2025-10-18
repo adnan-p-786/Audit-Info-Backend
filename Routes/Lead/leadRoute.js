@@ -15,7 +15,7 @@ router.post('/create', async (req, res) => {
     } = req.body;
 
     if (
-      !name || !phone_number || !date_of_joining || !status ||
+      !name || !phone_number || !date_of_joining || !status===undefined ||
       !mark || !subject_name || !course || !address || !branchId || !schoolId
     ) {
       return res.status(400).json({ message: "All fields are required" });

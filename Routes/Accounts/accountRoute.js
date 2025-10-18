@@ -9,27 +9,50 @@ const particularModel = require('../../models/Particulars/particulars')
 router.post('/servicecharge/:id', async (req, res) => {
     try {
         const { credit, amount_type } = req.body;
-        const registrationId = req.params.id
+        const registrationId = req.params.id;
+
         if (!credit || !amount_type) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        // const newAccount = await AccountsModel.create({ amount_type, credit, registrationId });
+        // 1. Get the "Service Charge" particular
+        const particular = await particularModel.findOne({ name: "Service Charge" }).select("_id");
+        if (!particular) {
+            return res.status(404).json({ message: "Service Charge particular not found" });
+        }
 
+        // 2. Create new account record
+        const newAccount = await AccountsModel.create({
+            registrationId: registrationId,
+            particularId: particular._id,
+            amount_type,
+            credit,
+        });
+
+        // 3. Update registration status
         const updatedRegistration = await RegistrationtableModel.findByIdAndUpdate(
-            req.params.id,
-            { status: "forServicecollection", recived_amount: credit , amount_type: amount_type },
+            registrationId,
+            {
+                status: "forServicecollection",
+                recived_amount: credit,
+                amount_type,
+            },
             { new: true }
         );
 
-        res.status(201).json();
-
-
+        // 4. Send response
+        res.status(201).json({
+            message: "Service charge recorded successfully",
+            account: newAccount,
+            registration: updatedRegistration,
+        });
 
     } catch (error) {
+        console.error(error);
         res.status(400).json({ error: error.message });
     }
 });
+
 
 router.post('/addamount/:id', async (req, res) => {
     try {
@@ -59,22 +82,34 @@ router.post('/addamount/:id', async (req, res) => {
 
 router.get('/get-servicecharge/:id', async (req, res) => {
     try {
-        const registerId = RegistrationtableModel.find().select('_id');
-        // console.log({registerId});
-        const particularId = await particularModel.findOne({ name: "Service Charge" }).select('_id');
-        // console.log({particularId});
+        const studentId = req.params.id; // Get the ID from the URL parameter
         
-        const data = await AccountsModel.find({ registerId: req.params.id, particularId:particularId._id })
+        // Find the specific registration for this student
+        const registration = await RegistrationtableModel.findOne({ _id: studentId }).select('_id');
+        
+        if (!registration) {
+            return res.status(404).json({ message: "Registration not found" });
+        }
+        
+        const particularId = await particularModel.findOne({ name: "Service Charge" }).select('_id');
+        
+        if (!particularId) {
+            return res.status(404).json({ message: "Service Charge particular not found" });
+        }
+        
+        const data = await AccountsModel.find({ 
+            particularId: particularId._id, 
+            registrationId: registration._id 
+        })
             .populate('registrationId')
-            .populate('particularId')
-            console.log({data});
+            .populate('particularId');
 
-       return res.status(200).json(data);
+        return res.status(200).json(data);
     } catch (error) {
-        res.status(400).json(error);
+        console.error(error); // Log the actual error for debugging
+        res.status(400).json({ error: error.message });
     }
 });
-
 
 
 router.post('/create/:id', async (req, res) => {
@@ -135,7 +170,7 @@ router.post('/collect-Payment/:id', async (req, res) => {
             credit: registered.recived_amount,
             amount_type: registered.amount_type,
             particular: particular._id,
-            registerId: req.params.id
+            registrationId: req.params.id
         });
 
         res.status(201).json({
@@ -226,7 +261,7 @@ router.delete('/delete/:id', async (req, res) => {
         if (!deleteData) {
             return res.status(404).json({ message: "Account not found" });
         }
-        res.status(200).json({ message: "Account deleted successfully", deletedAccountant: deleteData });
+        res.status(200).json({ message: "Account deleted successfully", deletedAccount: deleteData });
     } catch (error) {
         res.status(400).json(error);
     }
