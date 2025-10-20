@@ -19,23 +19,25 @@ const UserSchema = new mongoose.Schema({
     is_admin: { type: Boolean, default: false },
     head_administractor: { type: Boolean, default: false },
 
-    branchId: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch'},
+    branchId: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch' },
     managerPoint: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ManagerPoint' }],
     sroId: {
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' // if it also references another User
     },
     srcId: {
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' // change this from String → ObjectId with ref
     },
     lead: [{ type: mongoose.Schema.Types.ObjectId, ref: 'lead' }],
     registration: [{ type: mongoose.Schema.Types.ObjectId, ref: 'registrationTable' }],
-    srcPoint: { 
-        type:Number
+    srcPoint: {
+        type: Number
     },
-    sroPoint: { 
-        type:Number
+    sroPoint: {
+        type: Number
     },
-    Salary: { 
+    Salary: {
         type: Number,
     },
 }, {

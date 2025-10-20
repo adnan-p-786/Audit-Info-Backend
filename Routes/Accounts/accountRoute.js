@@ -78,6 +78,27 @@ router.post('/addamount/:id', async (req, res) => {
     }
 });
 
+router.get('/get-transation/:id', async (req, res) => {
+    try {
+        const studentId = req.params.id;
+        
+        const registration = await RegistrationtableModel.findOne({ _id: studentId }).select('_id');
+        
+        if (!registration) {
+            return res.status(404).json({ message: "Registration not found" });
+        }
+        
+        const particularId = await particularModel.findOne({ name: "Fees" }).select('_id');
+        
+        if (!particularId) {
+            return res.status(404).json({ message: "Fees particular not found" });
+        }
+       
+    } catch (error) {
+        console.error(error); 
+        res.status(400).json({ error: error.message });
+    }
+});
 
 
 router.get('/get-servicecharge/:id', async (req, res) => {
