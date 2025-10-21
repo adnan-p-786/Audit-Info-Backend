@@ -54,6 +54,32 @@ router.post('/servicecharge/:id', async (req, res) => {
 });
 
 
+router.post('/confirmcollegefee/:id', async (req, res) => {
+    try {
+
+        const {debit , amount_type} = req.body;
+
+        if (!debit || !amount_type) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const collegeFeeconfirmation = await RegistrationtableModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "none" },
+            { new: true }
+        );
+
+        if (!collegeFeeconfirmation) {
+            return res.status(404).json({ message: "Record not found" });
+        }
+
+        res.status(200).json({ message: "Payment confirmed", collegeFeeconfirmation });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+
 router.post('/addamount/:id', async (req, res) => {
     try {
         const { credit, amount_type } = req.body;
@@ -78,28 +104,37 @@ router.post('/addamount/:id', async (req, res) => {
     }
 });
 
-router.get('/get-transation/:id', async (req, res) => {
+router.get('/get-transaction/:id', async (req, res) => {
     try {
         const studentId = req.params.id;
         
-        const registration = await RegistrationtableModel.findOne({ _id: studentId }).select('_id');
+        const registration = await RegistrationtableModel.findOne({ _id: studentId });
         
         if (!registration) {
             return res.status(404).json({ message: "Registration not found" });
         }
+
+        // console.log(registration)
         
-        const particularId = await particularModel.findOne({ name: "Fees" }).select('_id');
+        const particularId = await particularModel.findOne({ name: "Add Amount" });
         
         if (!particularId) {
-            return res.status(404).json({ message: "Fees particular not found" });
+            return res.status(404).json({ message: "Add Amount not found" });
         }
+        // console.log(particularId)
+
+        const data = await AccountsModel.find({registrationId: studentId , particularId: particularId})
+            .populate('registrationId')
+            .populate('particularId');
+            console.log(data)
+
+        return res.status(200).json(data);
        
     } catch (error) {
         console.error(error); 
         res.status(400).json({ error: error.message });
     }
 });
-
 
 router.get('/get-servicecharge/:id', async (req, res) => {
     try {
@@ -190,7 +225,7 @@ router.post('/collect-Payment/:id', async (req, res) => {
         const newAccount = await AccountsModel.create({
             credit: registered.recived_amount,
             amount_type: registered.amount_type,
-            particular: particular._id,
+            particularId: particular._id,
             registrationId: req.params.id
         });
 
