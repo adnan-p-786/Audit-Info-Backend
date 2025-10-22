@@ -79,6 +79,9 @@ const RegistrationTableSchema = new mongoose.Schema({
     collectionamount: {
         type: Number,
     },
+    refundamount: {
+        type: Number
+    }
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });

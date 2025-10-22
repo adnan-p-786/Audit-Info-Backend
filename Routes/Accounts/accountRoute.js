@@ -4,6 +4,7 @@ const router = express.Router()
 const RecievedAmountModel = require('../../models/Recieved Amount/recivedAmount')
 const RegistrationtableModel = require('../../models/RegistrationTable/registrationTable')
 const particularModel = require('../../models/Particulars/particulars')
+const collegefeeModel = require('../../models/CollegeFees/collegeFees')
 
 
 router.post('/servicecharge/:id', async (req, res) => {
@@ -56,28 +57,27 @@ router.post('/servicecharge/:id', async (req, res) => {
 
 router.post('/confirmcollegefee/:id', async (req, res) => {
     try {
-
-        const {debit , amount_type} = req.body;
+        const { debit, amount_type  } = req.body;
 
         if (!debit || !amount_type) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        const collegeFeeconfirmation = await RegistrationtableModel.findByIdAndUpdate(
+        const college = await collegefeeModel.findByIdAndUpdate(
             req.params.id,
-            { status: "none" },
+            { directPay: true },
             { new: true }
         );
 
-        if (!collegeFeeconfirmation) {
-            return res.status(404).json({ message: "Record not found" });
-        }
+        res.status(200).json({
+            message: "Payment confirmed"
+        });
 
-        res.status(200).json({ message: "Payment confirmed", collegeFeeconfirmation });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
+
 
 
 router.post('/addamount/:id', async (req, res) => {
@@ -107,31 +107,31 @@ router.post('/addamount/:id', async (req, res) => {
 router.get('/get-transaction/:id', async (req, res) => {
     try {
         const studentId = req.params.id;
-        
+
         const registration = await RegistrationtableModel.findOne({ _id: studentId });
-        
+
         if (!registration) {
             return res.status(404).json({ message: "Registration not found" });
         }
 
         // console.log(registration)
-        
+
         const particularId = await particularModel.findOne({ name: "Add Amount" });
-        
+
         if (!particularId) {
             return res.status(404).json({ message: "Add Amount not found" });
         }
         // console.log(particularId)
 
-        const data = await AccountsModel.find({registrationId: studentId , particularId: particularId})
+        const data = await AccountsModel.find({ registrationId: studentId, particularId: particularId })
             .populate('registrationId')
             .populate('particularId');
-            console.log(data)
+        console.log(data)
 
         return res.status(200).json(data);
-       
+
     } catch (error) {
-        console.error(error); 
+        console.error(error);
         res.status(400).json({ error: error.message });
     }
 });
@@ -139,23 +139,23 @@ router.get('/get-transaction/:id', async (req, res) => {
 router.get('/get-servicecharge/:id', async (req, res) => {
     try {
         const studentId = req.params.id; // Get the ID from the URL parameter
-        
+
         // Find the specific registration for this student
         const registration = await RegistrationtableModel.findOne({ _id: studentId }).select('_id');
-        
+
         if (!registration) {
             return res.status(404).json({ message: "Registration not found" });
         }
-        
+
         const particularId = await particularModel.findOne({ name: "Service Charge" }).select('_id');
-        
+
         if (!particularId) {
             return res.status(404).json({ message: "Service Charge particular not found" });
         }
-        
-        const data = await AccountsModel.find({ 
-            particularId: particularId._id, 
-            registrationId: registration._id 
+
+        const data = await AccountsModel.find({
+            particularId: particularId._id,
+            registrationId: registration._id
         })
             .populate('registrationId')
             .populate('particularId');
