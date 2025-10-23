@@ -31,23 +31,6 @@ router.post('/create-service/:id', async (req, res) => {
     }
 })
 
-// router.post('/refund/:id', async (req, res) => {
-//     try {
-//         const { refundamount } = req.body
-//         if (!refundamount)
-//             return res.status(400).json({ message: "amount required" })
-
-//         const updateData = await RegistrationTableModel.findByIdAndUpdate(
-//             req.params.id,
-//             { refundamount: refundamount },
-//             { new: true }
-//         )
-
-//         res.status(201).json(updateData)
-//     } catch (error) {
-//         res.status(400).json(error)
-//     }
-// })
 
 router.post('/refund/:id', async (req, res) => {
     try {
@@ -57,14 +40,13 @@ router.post('/refund/:id', async (req, res) => {
         if (!registrationId) {
             return res.status(400).json({ message: "registrationId is required" });
         }
-
+        // console.log(registrationId);
 
         if (!refundamount) {
             return res.status(400).json({ message: "amount required" });
         }
 
-
-        const particular = await particularModel.findOne({ name: "Refund" }).select("_id");
+        const particular = await particularModel.findOne({ name: "Refund" });
         if (!particular) {
             return res.status(404).json({ message: "Refund particular not found" });
         }
@@ -84,6 +66,10 @@ router.post('/refund/:id', async (req, res) => {
             },
             { new: true }
         );
+
+        if (!updatedRegistration) {
+            return res.status(404).json({ message: "Registration not found" });
+        }
 
         res.status(201).json({
             message: "Refund successfully",
@@ -109,6 +95,7 @@ router.post('/create', async (req, res) => {
         res.status(400).json(error)
     }
 })
+
 
 
 router.get('/get', async (req, res) => {

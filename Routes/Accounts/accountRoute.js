@@ -79,6 +79,34 @@ router.post('/confirmcollegefee/:id', async (req, res) => {
 });
 
 
+router.post('/confirmrefund/:id', async (req, res) => {
+    try {
+        const { credit, amount_type  } = req.body;
+
+        if (!credit || !amount_type) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const refund = await AccountsModel.create({ credit ,amount_type});
+
+        res.status(201).json({refund});
+
+        const register = await RegistrationtableModel.findByIdAndUpdate(
+            req.params.id,
+            { status: "none" },
+            { new: true }
+        );
+
+        res.status(200).json({
+            message: "Payment confirmed"
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 
 router.post('/addamount/:id', async (req, res) => {
     try {
