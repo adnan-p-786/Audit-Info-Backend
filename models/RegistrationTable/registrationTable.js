@@ -27,7 +27,8 @@ const RegistrationTableSchema = new mongoose.Schema({
         type: String,
     },
     cancel: {
-        type: Boolean
+        type: Boolean,
+        default: false
     },
     address: {
         type: String,

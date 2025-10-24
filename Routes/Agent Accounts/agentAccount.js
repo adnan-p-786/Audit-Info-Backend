@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/create',async(req,res)=>{
     try {
-        const {amount,type,amount_type,agentId,registrationTableId}= req.body
-        if (!amount ||!type ||!amount_type ||!agentId ||!registrationTableId)
+        const {debit,amount_type,agentId,registrationId,particularId}= req.body
+        if (!debit ||!amount_type ||!agentId ||!registrationId ||!particularId)
             res.status(400).json({message: "all fields are required"})
-        const newData = await AgentAccountModel.create({amount,type,amount_type,agentId,registrationTableId})
+        const newData = await AgentAccountModel.create({debit,amount_type,agentId,registrationId,particularId})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -20,7 +20,8 @@ router.get('/get', async (req, res) => {
     try {
         const data = await AgentAccountModel.find()
         .populate('agentId')
-        .populate('registrationTableId')
+        .populate('registrationId')
+        .populate('particularId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);

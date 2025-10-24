@@ -83,13 +83,43 @@ router.post('/refund/:id', async (req, res) => {
     }
 });
 
+router.put('/updateregister/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cancel } = req.body; 
+
+    if (!id) {
+      return res.status(400).json({ message: "registrationId is required" });
+    }
+
+    const updatedData = await RegistrationTableModel.findByIdAndUpdate(
+      id,
+      { cancel: true },
+      { new: true }
+    );
+
+    if (!updatedData) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    res.status(200).json({
+      message: 'Student updated successfully',
+      data: updatedData,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to update student', error: error.message });
+  }
+});
+
+
 
 router.post('/create', async (req, res) => {
     try {
         const { name, schoolId, phone_number, address, collegeId, course, total_fee, recived_amount, certificates, comment, commission, booking_amount, agentId } = req.body
         if (!name || !schoolId || !phone_number || !address || !collegeId || !course || !total_fee || !recived_amount || !certificates || !comment || !commission || !booking_amount || !agentId)
             return res.status(400).json({ message: "all fields are required" })
-        const newData = await RegistrationTableModel.create({ name, schoolId, phone_number, address, collegeId, course, total_fee, recived_amount, certificates, comment, commission, booking_amount, agentId, status: "registered" })
+        const newData = await RegistrationTableModel.create({ name, schoolId, phone_number, address, collegeId, course, total_fee, recived_amount, certificates, comment, commission, booking_amount, agentId, status: "registered"})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)

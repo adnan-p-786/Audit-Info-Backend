@@ -1,11 +1,7 @@
 const mongoose = require('mongoose')
 
 const AgentAccountSchema = new mongoose.Schema({
-    amount: {
-        type: Number,
-        required: true,
-    },
-    type: {
+    debit: {
         type: String,
         required: true,
     },
@@ -18,11 +14,17 @@ const AgentAccountSchema = new mongoose.Schema({
         ref: "Agent",
         required: true
     },
-    registrationTableId: {
+    particularId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "registrationTable",
-        required: true
+        ref: "Particular",
     },
+    registrationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "RegistrationTable",
+    },
+    status: {
+        type:Boolean
+    }
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });
