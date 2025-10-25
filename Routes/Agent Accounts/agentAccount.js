@@ -5,10 +5,10 @@ const router = express.Router()
 
 router.post('/create',async(req,res)=>{
     try {
-        const {debit,amount_type,agentId,registrationId,particularId}= req.body
-        if (!debit ||!amount_type ||!agentId ||!registrationId ||!particularId)
+        const {amount,type,amount_type,agentId,registrationId,particularId}= req.body
+        if (!amount ||!type ||!amount_type ||!agentId ||!registrationId ||!particularId)
             res.status(400).json({message: "all fields are required"})
-        const newData = await AgentAccountModel.create({debit,amount_type,agentId,registrationId,particularId})
+        const newData = await AgentAccountModel.create({amount,amount_type,agentId,registrationId,particularId,type,status:"foragentpayments"})
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
