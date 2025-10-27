@@ -6,34 +6,49 @@ const jwt = require('jsonwebtoken')
 const router = express.Router()
 
 
-router.post('/create', async (req, res) => {
+router.post('/signup', async (req, res) => {
     try {
-        const { name, email, password, Role } = req.body
+        const { name, position, email, password } = req.body;
 
-        if (!name || !email || !password || !Role) {
-            return res.status(400).json({ message: "Name, Email, Password, and Role are required"})
+        if (!name || !position || !email || !password) {
+            return res.status(400).json({ message: "Name, Email, Password, and Position are required" });
         }
 
-        if (!['SRC', 'SRO','Accountant','Administrator','Manager'].includes(Role)) {
-            return res.status(400).json({ message: "Role must be either" })
+        const allowedPositions = ['SRC', 'SRO', 'Accountant', 'Administrator', 'Manager'];
+        if (!allowedPositions.includes(position)) {
+            return res.status(400).json({ message: `Position must be one of: ${allowedPositions.join(', ')}` });
         }
 
         const existingUser = await userModel.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: "Email already in use" });
+            return res.status(400).json({ message: "User already exists" });
         }
 
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(Password, salt);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Generate unique employee code
+        const lastUser = await userModel.findOne().sort({ createdAt: -1 });
+        let employeeCode;
+        if (lastUser && lastUser.employee_code) {
+            const lastCode = parseInt(lastUser.employee_code.replace('EMP', ''));
+            employeeCode = `EMP${(lastCode + 1).toString().padStart(4, '0')}`;
+        } else {
+            employeeCode = 'EMP0001';
+        }
 
         const newUser = await userModel.create({
             name,
             email,
-            Password: hashedPassword,
-            Role
+            password: hashedPassword,
+            position,
+            employee_code: employeeCode 
         });
 
-        const token = jwt.sign({ id: newUser._id, role: newUser.Role }, process.env.JWT_SECRET);
+        const token = jwt.sign(
+            { id: newUser._id, role: newUser.position },
+            process.env.JWT_SECRET
+        );
 
         return res.status(201).json({
             success: true,
@@ -42,7 +57,47 @@ router.post('/create', async (req, res) => {
                 id: newUser._id,
                 Name: newUser.name,
                 Email: newUser.email,
-                Role: newUser.Role
+                Position: newUser.position,
+                EmployeeCode: newUser.employee_code
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+
+
+router.post('/login', async (req, res) => {
+    try {
+        const {email, password ,position } = req.body;
+
+        if (!email || !password ||!position) {
+            return res.status(400).json({ message: "Email, position and password are required" });
+        }
+
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User does not exist" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: "Invalid Password" });
+        }
+
+        const token = jwt.sign({ id: user._id, password: user.position }, process.env.JWT_SECRET);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                token,
+                id: user._id,
+                Email: user.email,
+                Password: user.password,
+                Position: user.position
             }
         });
 
@@ -56,43 +111,6 @@ router.get('/get', async (req, res) => {
     try {
         const users = await userModel.find();
         res.status(200).json(users);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
-    }
-});
-
-
-router.post('/login', async (req, res) => {
-    try {
-        const { Email, Password , Role } = req.body;
-
-        if (!Email || !Password ||!Role) {
-            return res.status(400).json({ message: "Email, Role and password are required" });
-        }
-
-        const user = await userModel.findOne({ Email });
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User does not exist" });
-        }
-
-        const isMatch = await bcrypt.compare(Password, user.Password);
-        if (!isMatch) {
-            return res.status(401).json({ success: false, message: "Invalid credentials" });
-        }
-
-        const token = jwt.sign({ id: user._id, role: user.Role }, process.env.JWT_SECRET);
-
-        res.status(200).json({
-            success: true,
-            data: {
-                token,
-                id: user._id,
-                Email: user.Email,
-                Role: user.Role
-            }
-        });
-
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }

@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
     },
     password: String,
     position: { type: String },
-    employee_code: { type: String, unique: true },
+    employee_code: { type: String, unique: true},
     phone_number: String,
     date_of_joining: Date,
     address: String,
@@ -23,11 +23,11 @@ const UserSchema = new mongoose.Schema({
     managerPoint: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ManagerPoint' }],
     sroId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' // if it also references another User
+        ref: 'User'
     },
     srcId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' // change this from String → ObjectId with ref
+        ref: 'User'
     },
     lead: [{ type: mongoose.Schema.Types.ObjectId, ref: 'lead' }],
     registration: [{ type: mongoose.Schema.Types.ObjectId, ref: 'registrationTable' }],
