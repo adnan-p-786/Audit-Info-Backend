@@ -14,11 +14,11 @@ router.post('/create', async (req, res) => {
             return res.status(400).json({ message: "Name, Email, Password, and Role are required"})
         }
 
-        if (!['Doctor', 'Admin'].includes(Role)) {
-            return res.status(400).json({ message: "Role must be either 'Doctor' or 'Admin'" })
+        if (!['SRC', 'SRO','Accountant','Administrator','Manager'].includes(Role)) {
+            return res.status(400).json({ message: "Role must be either" })
         }
 
-        const existingUser = await userModel.findOne({ Email });
+        const existingUser = await userModel.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: "Email already in use" });
         }
@@ -27,8 +27,8 @@ router.post('/create', async (req, res) => {
         const hashedPassword = await bcrypt.hash(Password, salt);
 
         const newUser = await userModel.create({
-            Name,
-            Email,
+            name,
+            email,
             Password: hashedPassword,
             Role
         });
@@ -40,8 +40,8 @@ router.post('/create', async (req, res) => {
             token,
             user: {
                 id: newUser._id,
-                Name: newUser.Name,
-                Email: newUser.Email,
+                Name: newUser.name,
+                Email: newUser.email,
                 Role: newUser.Role
             }
         });

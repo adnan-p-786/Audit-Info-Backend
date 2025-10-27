@@ -88,13 +88,13 @@ router.post('/login', async (req, res) => {
 
 
 
-// router.get('/get', async (req, res) => {
-//     try {
-//         const managers = await ManagerModel.find();
-//         res.status(200).json(managers);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Server error', error });
-//     }
-// });
+router.get('/get', async (req, res) => {
+    try {
+        const managers = await ManagerModel.find();
+        res.status(200).json(managers);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
 
 module.exports = router;
