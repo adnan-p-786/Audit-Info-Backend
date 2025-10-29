@@ -32,7 +32,7 @@ router.post('/confirmagentpymnt/:id', async (req, res) => {
             return res.status(404).json({ message: "Commission particular not found" });
         }
 
-        const data = await accounts.create({ credit, amount_type,particularId});
+        const data = await accounts.create({ credit, amount_type, particularId });
 
         res.status(201).json({ data });
 
@@ -55,8 +55,14 @@ router.get('/get', async (req, res) => {
     try {
         const data = await AgentAccountModel.find()
             .populate('agentId')
-            .populate('registrationId')
             .populate('particularId')
+            .populate({
+                path: 'registrationId',
+                populate: [
+                    { path: 'collegeId' },
+                    { path: 'schoolId' }
+                ]
+            });
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);
