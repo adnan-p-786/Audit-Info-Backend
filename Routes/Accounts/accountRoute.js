@@ -166,9 +166,8 @@ router.get('/get-transaction/:id', async (req, res) => {
 
 router.get('/get-servicecharge/:id', async (req, res) => {
     try {
-        const studentId = req.params.id; // Get the ID from the URL parameter
+        const studentId = req.params.id;
 
-        // Find the specific registration for this student
         const registration = await RegistrationtableModel.findOne({ _id: studentId }).select('_id');
 
         if (!registration) {
