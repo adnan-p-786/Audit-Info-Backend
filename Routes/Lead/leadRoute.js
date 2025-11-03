@@ -1,7 +1,6 @@
 const express = require('express')
 const LeadModel = require('../../models/lead/lead')
 const LeadHistoryModel = require('../../models/lead/leadHistory')
-const PointModel = require('../../models/Point/point')
 const router = express.Router()
 const xlsx = require('xlsx');
 const mongoose = require('mongoose');
@@ -9,68 +8,20 @@ const mongoose = require('mongoose');
 
 router.post('/create', async (req, res) => {
   try {
-    const {
-      name, phone_number, date_of_joining, status, delete: del, address,
-      mark, subject_name, course, sRCId, sROId, branchId, schoolId
-    } = req.body;
+    const { name, phone_number, date_of_joining, status, delete: del, address, mark, subject_name, course, sRCId, sROId, branchId, schoolId } = req.body;
 
-    if (
-      !name || !phone_number || !date_of_joining || !status===undefined ||
-      !mark || !subject_name || !course || !address || !branchId || !schoolId
-    ) {
+    if (!name || !phone_number || !date_of_joining || !status === undefined || !mark || !subject_name || !course || !address || !branchId || !schoolId ||!sRCId || !sROId) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     const newLead = await LeadModel.create({
       name, phone_number, date_of_joining, status, address,
-      mark, subject_name, course, branchId, schoolId
+      mark, subject_name, course, branchId, schoolId, sRCId, sROId
     });
-
-  
-    const pointEntries = [];
-
-    if (sRCId) {
-      pointEntries.push({
-        debit: 0,
-        credit: 10,
-        type: 'credit',
-        particular: `Lead (${name}) created by SRO ${sRCId}`,
-        adminUsersId: sRCId,
-        registrationTableId: newLead._id
-      });
-    }
-
-    if (sROId) {
-      pointEntries.push({
-        debit: 0,
-        credit: 5, 
-        type: 'credit',
-        particular: `Lead (${name}) created by SRO ${sROId}`,
-        adminUsersId: sROId,
-        registrationTableId: newLead._id
-      });
-    }
-
-    if (branchId) {
-      pointEntries.push({
-        debit: 0,
-        credit: 2, 
-        type: 'credit',
-        particular: `Lead under branch ${branchId}`,
-        adminUsersId: branchId,
-        registrationTableId: newLead._id
-      });
-    }
-
-    // Bulk insert all point entries
-    if (pointEntries.length > 0) {
-      await PointModel.insertMany(pointEntries);
-    }
 
     res.status(201).json(newLead);
 
   } catch (error) {
-    console.error('Error creating lead:', error);
     res.status(400).json({ message: "Creation failed", error });
   }
 });
