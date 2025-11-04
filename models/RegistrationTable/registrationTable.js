@@ -82,7 +82,11 @@ const RegistrationTableSchema = new mongoose.Schema({
     },
     refundamount: {
         type: Number
-    }
+    },
+    leadId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Lead",
+    },
 }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });

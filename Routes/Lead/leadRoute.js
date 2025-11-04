@@ -8,14 +8,14 @@ const mongoose = require('mongoose');
 
 router.post('/create', async (req, res) => {
   try {
-    const { name, phone_number, date_of_joining, status, delete: del, address, mark, subject_name, course, sRCId, sROId, branchId, schoolId } = req.body;
+    const { name, phone_number, address, mark, subject_name, course, sRCId, sROId, branchId, schoolId, comment } = req.body;
 
-    if (!name || !phone_number || !date_of_joining || !status === undefined || !mark || !subject_name || !course || !address || !branchId || !schoolId ||!sRCId || !sROId) {
+    if (!name || !phone_number || !mark || !subject_name || !course || !address || !branchId || !schoolId ||!sRCId || !sROId || !comment) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     const newLead = await LeadModel.create({
-      name, phone_number, date_of_joining, status, address,
+      name, phone_number, comment, address,
       mark, subject_name, course, branchId, schoolId, sRCId, sROId
     });
 
@@ -26,48 +26,48 @@ router.post('/create', async (req, res) => {
   }
 });
 
-router.post("/uploadEXCEL", async (c) => {
-  try {
-    const formData = await c.req.formData();
-    const file = formData.get("file");
-    const buffer = Buffer.from(await file.arrayBuffer());
+// router.post("/uploadEXCEL", async (c) => {
+//   try {
+//     const formData = await c.req.formData();
+//     const file = formData.get("file");
+//     const buffer = Buffer.from(await file.arrayBuffer());
 
-    const xlfile = xlsx.read(buffer);
-    let xldata = [];
+//     const xlfile = xlsx.read(buffer);
+//     let xldata = [];
 
-    const sheets = xlfile.SheetNames;
+//     const sheets = xlfile.SheetNames;
 
-    for (let i = 0; i < sheets.length; i++) {
-      const temp = xlsx.utils.sheet_to_json(xlfile.Sheets[sheets[i]]);
-      temp.forEach((res) => {
-        // Optional: Transform input if necessary
-        // For example: Convert date strings to Date objects, etc.
-        xldata.push({
-          name: res.name,
-          phone_number: res.phone_number,
-          date_of_joining: new Date(res.date_of_joining),
-          status: res.status || 'pending',
-          delete: res.delete === 'true' || res.delete === true, // ensure Boolean
-          address: res.address,
-          mark: Number(res.mark),
-          subject_name: res.subject_name,
-          course: res.course,
-          sRCId: res.sRCId ? new mongoose.Types.ObjectId(res.sRCId) : undefined,
-          sROId: res.sROId ? new mongoose.Types.ObjectId(res.sROId) : undefined,
-          branchId: new mongoose.Types.ObjectId(res.branchId),
-          schoolId: new mongoose.Types.ObjectId(res.schoolId),
-        });
-      });
-    }
+//     for (let i = 0; i < sheets.length; i++) {
+//       const temp = xlsx.utils.sheet_to_json(xlfile.Sheets[sheets[i]]);
+//       temp.forEach((res) => {
+//         // Optional: Transform input if necessary
+//         // For example: Convert date strings to Date objects, etc.
+//         xldata.push({
+//           name: res.name,
+//           phone_number: res.phone_number,
+//           date_of_joining: new Date(res.date_of_joining),
+//           status: res.status || 'pending',
+//           delete: res.delete === 'true' || res.delete === true, // ensure Boolean
+//           address: res.address,
+//           mark: Number(res.mark),
+//           subject_name: res.subject_name,
+//           course: res.course,
+//           sRCId: res.sRCId ? new mongoose.Types.ObjectId(res.sRCId) : undefined,
+//           sROId: res.sROId ? new mongoose.Types.ObjectId(res.sROId) : undefined,
+//           branchId: new mongoose.Types.ObjectId(res.branchId),
+//           schoolId: new mongoose.Types.ObjectId(res.schoolId),
+//         });
+//       });
+//     }
 
-    const result = await Lead.insertMany(xldata);
+//     const result = await Lead.insertMany(xldata);
 
-    return c.json({ success: true, inserted: result.length, data: result });
-  } catch (error) {
-    console.error(error);
-    return c.json({ error: error.message }, 400);
-  }
-});
+//     return c.json({ success: true, inserted: result.length, data: result });
+//   } catch (error) {
+//     console.error(error);
+//     return c.json({ error: error.message }, 400);
+//   }
+// });
 
 
 

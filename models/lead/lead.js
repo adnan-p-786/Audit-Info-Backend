@@ -9,16 +9,6 @@ const LeadSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    date_of_joining: {
-        type: Date,
-        required: true,
-    },
-    status: {
-        type: String,
-    },
-    delete: {
-        type: Boolean,
-    },
     address: {
         type: String,
         required: true,
@@ -35,13 +25,22 @@ const LeadSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    comment: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+    },
     sRCId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        required: true,
     },
     sROId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        required: true,
     },
     branchId: {
         type: mongoose.Schema.Types.ObjectId,
