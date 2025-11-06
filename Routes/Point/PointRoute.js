@@ -5,8 +5,8 @@ const router = express.Router()
 router.get('/get', async (req, res) => {
     try {
         const data = await PointModel.find()
-        .populate(adminUsersId)
-        .populate(registrationTableId)
+        .populate(userId)
+        .populate(registrationId)
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);

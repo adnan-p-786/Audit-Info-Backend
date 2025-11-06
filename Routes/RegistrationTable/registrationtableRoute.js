@@ -122,7 +122,7 @@ router.post('/create', async (req, res) => {
         const { name, schoolId, phone_number, address, collegeId, course, total_fee, recived_amount, certificates, comment, commission, booking_amount, agentId } = req.body
         if (!name || !schoolId || !phone_number || !address || !collegeId || !course || !total_fee || !recived_amount || !certificates || !comment || !commission || !booking_amount || !agentId)
             return res.status(400).json({ message: "all fields are required" })
-        const newData = await RegistrationTableModel.create({ name, schoolId, phone_number, address, collegeId, course, total_fee, recived_amount, certificates, comment, commission, booking_amount, agentId, status: "registered"})
+        const newData = await RegistrationTableModel.create({ name, schoolId, phone_number, address, collegeId, course, total_fee, recived_amount, certificates, comment, commission, booking_amount, agentId, status: "registered" })
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -132,91 +132,106 @@ router.post('/create', async (req, res) => {
 
 
 router.post('/register/:id', async (req, res) => {
-  try {
-    const {
-      name, schoolId, phone_number, address, collegeId, course,
-      total_fee, recived_amount, certificates, comment, commission,
-      booking_amount, agentId, branchId, sRCId, sROId
-    } = req.body;
+    try {
+        const {
+            name, schoolId, phone_number, address, collegeId, course,
+            total_fee, recived_amount, certificates, comment, commission,
+            booking_amount, agentId
+        } = req.body;
 
-    if (!name || !schoolId || !phone_number || !address || !collegeId ||
-        !course || !total_fee || !recived_amount || !certificates ||
-        !comment || !commission || !booking_amount || !agentId) {
-      return res.status(400).json({ message: "All fields are required" });
+        if (!name || !schoolId || !phone_number || !address || !collegeId ||
+            !course || !total_fee || !recived_amount || !certificates ||
+            !comment || !commission || !booking_amount || !agentId) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const newData = await RegistrationTableModel.create({
+            name, schoolId, phone_number, address, collegeId, course,
+            total_fee, recived_amount, certificates, comment, commission,
+            booking_amount, agentId, status: "registered"
+        });
+
+        // Update lead status
+        const leadId = req.params.id;
+        const updatedLead = await LeadModel.findByIdAndUpdate(
+            leadId,
+            { status: "Registered" },
+            { new: true }
+        ).populate('sRCId').populate('sROId').populate('branchId');
+
+
+        if (!updatedLead) {
+            return res.status(404).json({ message: 'Lead not found' });
+        }
+
+        // console.log(updatedLead);
+
+        // ✅ Extract values from the lead
+        const { branchId, sRCId, sROId } = updatedLead;
+
+        // Find manager under that branch
+        const manager = await ManagerModel.findOne({ branchId, position: 'Manager' });
+        // console.log('Manager found:', manager);
+
+        await newData.populate('collegeId');
+        const college = newData.collegeId;
+        console.log('College ID:', newData.collegeId);
+
+        const pointEntries = [];
+
+        if (manager) {
+            pointEntries.push({
+                debit: 0,
+                credit: college.bm_point,
+                type: 'credit',
+                particular: `Lead (${name}) registered under branch ${branchId || 'N/A'}`,
+                userId: manager._id,
+                registrationId: newData._id
+            });
+        }
+
+        // SRC Point
+        if (sRCId && sRCId._id) {
+            pointEntries.push({
+                debit: 0,
+                credit: college.src_point,
+                type: 'credit',
+                particular: `Lead (${name}) registered by SRC ${sRCId.name}`,
+                userId: sRCId._id,
+                registrationId: newData._id
+            });
+        }
+
+
+        if (sROId && sROId._id) {
+            pointEntries.push({
+                debit: 0,
+                credit: college.sro_point,
+                type: 'credit',
+                particular: `Lead (${name}) registered by SRO ${sROId.name}`,
+                userId: sROId._id,
+                registrationId: newData._id
+            });
+        }
+
+
+        if (pointEntries.length > 0) {
+            await PointModel.insertMany(pointEntries);
+        }
+
+        res.status(201).json({
+            message: 'Registration created and lead updated successfully',
+            registration: newData,
+            lead: updatedLead
+        });
+
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error", error });
     }
-
-    
-    const newData = await RegistrationTableModel.create({
-      name, schoolId, phone_number, address, collegeId, course,
-      total_fee, recived_amount, certificates, comment, commission,
-      booking_amount, agentId, status: "registered"
-    });
-
-    // Find manager
-    const manager = await ManagerModel.findOne({ position: 'Manager' });
-    const pointEntries = [];
-
-    if (manager) {
-      pointEntries.push({
-        debit: 0,
-        credit: 2,
-        type: 'credit',
-        particular: `Lead (${name}) created under branch ${branchId || 'N/A'}`,
-        userId: manager._id,
-        registrationId: newData._id
-      });
-    }
-
-    if (sRCId) {
-      pointEntries.push({
-        debit: 0,
-        credit: 10,
-        type: 'credit',
-        particular: `Lead (${name}) created by SRC ${sRCId}`,
-        userId: sRCId,
-        registrationId: newData._id
-      });
-    }
-
-    if (sROId) {
-      pointEntries.push({
-        debit: 0,
-        credit: 5,
-        type: 'credit',
-        particular: `Lead (${name}) created by SRO ${sROId}`,
-        userId: sROId,
-        registrationId: newData._id
-      });
-    }
-
-    if (pointEntries.length > 0) {
-      await PointModel.insertMany(pointEntries);
-    }
-
-    // Update lead status
-    const leadId = req.params.id;
-    const updatedLead = await LeadModel.findByIdAndUpdate(
-      leadId,
-      { status: "Registered" },
-      { new: true }
-    );
-
-    if (!updatedLead) {
-      return res.status(404).json({ message: 'Lead not found' });
-    }
-
-
-    res.status(201).json({
-      message: 'Registration created and lead updated successfully',
-      registration: newData,
-      lead: updatedLead
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error", error });
-  }
 });
+
 
 
 
