@@ -7,9 +7,9 @@ const router = express.Router()
 
 router.post('/create', async (req, res) => {
     try {
-        const { name, email, password,employee_code,phone_number,date_of_joining,address,head_administractor,branchId } = req.body
+        const { name, email, password,employee_code,phone_number,address,head_administractor,branchId } = req.body
 
-        if (!name || !email || !password ||!employee_code  || !phone_number || !date_of_joining || !address || !head_administractor === undefined ||!branchId) {
+        if (!name || !email || !password ||!employee_code  || !phone_number || !address || !head_administractor === undefined ||!branchId) {
             return res.status(400).json({ message: "All fields are required"})
         }
         const existingUser = await AdministractorModel.findOne({ email });
@@ -27,7 +27,6 @@ router.post('/create', async (req, res) => {
             position:"Administractor",
             employee_code,
             phone_number,
-            date_of_joining,
             address,
             head_administractor,
             branchId,

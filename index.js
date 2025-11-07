@@ -22,7 +22,7 @@ app.use(cors({
 job.start()
 
 app.use('/api/user',require('./Routes/Users/usersRoute.js'))
-app.use('/api/manager',require('./Routes/Manager/managerRoute.js'))
+app.use('/api/manager',require('./Routes/Manager Admin/managerRoute.js'))
 app.use('/api/administractor',require('./Routes/Administractor/administractorRoute.js'))
 app.use('/api/accountant',require('./Routes/Accountant/accountantRoute.js'))
 app.use('/api/src',require('./Routes/Src admin/srcRoute.js'))

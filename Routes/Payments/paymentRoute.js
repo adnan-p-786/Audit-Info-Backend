@@ -18,6 +18,8 @@ router.post('/create', async (req, res) => {
       return res.status(404).json({ message: "Invalid particularId" })
     }
 
+    console.log("Particular found:", particular)
+
     // ✅ 2. Create payment entry
     const newPayment = await PaymentModal.create({
       branchId,
@@ -44,7 +46,6 @@ router.post('/create', async (req, res) => {
       // ✅ 4. Create NEW debit point entry (do NOT update old record)
       await point.create({
         userId,
-        registrationId,
         debit: debitValue,
         credit: 0,
         type: "debit",

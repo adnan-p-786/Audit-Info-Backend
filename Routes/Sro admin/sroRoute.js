@@ -7,9 +7,9 @@ const router = express.Router()
 
 router.post('/create', async (req, res) => {
     try {
-        const { name, email, password,phone_number,date_of_joining,address,point_amount,status,employee_code,srcId,branchId} = req.body
+        const { name, email, password,phone_number,address,point_amount,status,employee_code,srcId,branchId} = req.body
 
-        if (!name || !email || !password ||!phone_number || !date_of_joining || !address ||!point_amount || !status || !employee_code ||!srcId || !branchId) {
+        if (!name || !email || !password ||!phone_number || !address ||!point_amount || !status || !employee_code ||!srcId || !branchId) {
             return res.status(400).json({ message: "All fields are required"})
         }
         const existingUser = await SroModel.findOne({ email });
@@ -28,7 +28,6 @@ router.post('/create', async (req, res) => {
             employee_code,
             status,
             phone_number,
-            date_of_joining,
             address,
             point_amount,
             srcId,

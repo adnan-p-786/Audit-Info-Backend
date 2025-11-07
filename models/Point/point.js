@@ -9,7 +9,6 @@ const PointSchema = new mongoose.Schema({
     registrationId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "RegistrationTable",
-        required: true
     },
     debit: {
         type: Number,

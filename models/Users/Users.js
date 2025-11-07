@@ -10,7 +10,6 @@ const UserSchema = new mongoose.Schema({
     position: { type: String },
     employee_code: { type: String, unique: true},
     phone_number: String,
-    date_of_joining: Date,
     address: String,
     status: { type: Boolean, default: true },
     refresh: String,
@@ -37,7 +36,7 @@ const UserSchema = new mongoose.Schema({
     sroPoint: {
         type: Number
     },
-    Salary: {
+    salary: {
         type: Number,
     },
 }, {
