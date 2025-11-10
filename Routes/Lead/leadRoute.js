@@ -1,6 +1,8 @@
 const express = require('express')
 const LeadModel = require('../../models/lead/lead')
 const LeadHistoryModel = require('../../models/lead/leadHistory')
+const Registration = require("../../models/RegistrationTable/registrationTable");
+const Point = require("../../models/Point/point");
 const router = express.Router()
 const xlsx = require('xlsx');
 const mongoose = require('mongoose');
@@ -16,7 +18,7 @@ router.post('/create', async (req, res) => {
 
     const newLead = await LeadModel.create({
       name, phone_number, comment, address,
-      mark, subject_name, course, branchId, schoolId, sRCId, sROId
+      mark, subject_name, course, branchId, schoolId, sRCId, sROId,status: 'Not Registered'
     });
 
     res.status(201).json(newLead);
@@ -108,18 +110,55 @@ router.get('/get', async (req, res) => {
 });
 
 
-// router.get('/get', async (req, res) => {
-//     try {
-//         const data = await LeadModel.find()
-//         .populate('branchId')
-//         .populate('schoolId')
-//         .populate('sRCId')
-//         .populate('sROId')
-//         res.status(200).json(data);
-//     } catch (error) {
-//         res.status(400).json(error);
-//     }
-// });
+router.get("/employee-sales", async (req, res) => {
+  try {
+    const data = await Registration.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "sROId",
+          foreignField: "_id",
+          as: "employee"
+        }
+      },
+      { $unwind: "$employee" },
+
+      {
+        $lookup: {
+          from: "collegemanagements",
+          localField: "collegeId",
+          foreignField: "_id",
+          as: "college"
+        }
+      },
+      { $unwind: { path: "$college", preserveNullAndEmptyArrays: true } },
+
+      {
+        $lookup: {
+          from: "points",
+          localField: "_id",
+          foreignField: "registrationId",
+          as: "points"
+        }
+      },
+
+      {
+        $project: {
+          createdAt: 1,
+          studentName: "$name",
+          employeeName: "$employee.name",
+          collegeName: "$college.college",
+          points: { $sum: "$points.credit" } // sum credit as Points
+        }
+      },
+      { $sort: { createdAt: -1 } }
+    ]);
+
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 
 router.put('/update/:id', async (req, res) => {
