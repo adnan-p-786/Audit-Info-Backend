@@ -2,6 +2,7 @@ const express = require('express')
 const LeadModel = require('../../models/lead/lead')
 const LeadHistoryModel = require('../../models/lead/leadHistory')
 const Registration = require("../../models/RegistrationTable/registrationTable");
+const Lead = require("../../models/lead/lead");
 const Point = require("../../models/Point/point");
 const router = express.Router()
 const xlsx = require('xlsx');
@@ -112,54 +113,116 @@ router.get('/get', async (req, res) => {
 
 router.get("/employee-sales", async (req, res) => {
   try {
-    const data = await Registration.aggregate([
-      {
-        $lookup: {
-          from: "users",
-          localField: "sROId",
-          foreignField: "_id",
-          as: "employee"
-        }
-      },
-      { $unwind: "$employee" },
+    // Fetch leads (because you have both leads + registrations)
+    const leads = await Lead.find()
+      .populate("sROId", "name")
+      .populate("sRCId", "name")
+      .populate("branchId", "branch_name")
+      .populate("schoolId", "school_name");
 
-      {
-        $lookup: {
-          from: "collegemanagements",
-          localField: "collegeId",
-          foreignField: "_id",
-          as: "college"
-        }
-      },
-      { $unwind: { path: "$college", preserveNullAndEmptyArrays: true } },
+    // Fetch registrations
+    const registrations = await Registration.find()
+      .populate("sROId", "name")
+      .populate("sRCId", "name")
+      .populate("collegeId", "college"); // Populate college info
 
-      {
-        $lookup: {
-          from: "points",
-          localField: "_id",
-          foreignField: "registrationId",
-          as: "points"
-        }
-      },
+    // Fetch points for registration-related credits
+    const points = await Point.find();
 
-      {
-        $project: {
-          createdAt: 1,
-          studentName: "$name",
-          employeeName: "$employee.name",
-          collegeName: "$college.college",
-          points: { $sum: "$points.credit" } // sum credit as Points
-        }
-      },
-      { $sort: { createdAt: -1 } }
-    ]);
+    // Build table data
+    const data = [];
 
-    res.json({ success: true, data });
+    // 1️⃣ Include all leads - create entries for both SRO and SRC
+    leads.forEach((lead) => {
+      const relatedPoints = points.filter(
+        (p) =>
+          p.particular?.includes(lead.name) || // sometimes point refers to lead name
+          p.registrationId?.toString() === lead._id.toString()
+      );
+
+      const totalPoints = relatedPoints.reduce(
+        (acc, p) => acc + (p.credit || 0) - (p.debit || 0),
+        0
+      );
+
+      // Add SRO entry if exists
+      if (lead.sROId) {
+        data.push({
+          _id: `${lead._id}_sro`,
+          date: lead.createdAt,
+          employee_name: lead.sROId.name,
+          student_name: lead.name || "N/A",
+          college: "-", // ✅ Changed to match dataIndex
+          points: totalPoints,
+        });
+      }
+
+      // Add SRC entry if exists
+      if (lead.sRCId) {
+        data.push({
+          _id: `${lead._id}_src`,
+          date: lead.createdAt,
+          employee_name: lead.sRCId.name,
+          student_name: lead.name || "N/A",
+          college: "-", // ✅ Changed to match dataIndex
+          points: totalPoints,
+        });
+      }
+    });
+
+    // 2️⃣ Include all registrations - create entries for both SRO and SRC
+    registrations.forEach((reg) => {
+      const regPoints = points.filter(
+        (p) => p.registrationId?.toString() === reg._id.toString()
+      );
+
+      const totalPoints = regPoints.reduce(
+        (acc, p) => acc + (p.credit || 0) - (p.debit || 0),
+        0
+      );
+
+      // Extract college name
+      const collegeName = reg.collegeId?.college || "N/A";
+
+      // Add SRO entry if exists
+      if (reg.sROId) {
+        data.push({
+          _id: `${reg._id}_sro`,
+          date: reg.createdAt,
+          employee_name: reg.sROId.name,
+          student_name: reg.name || "N/A",
+          college: collegeName, // ✅ Changed to match dataIndex
+          collegeId: reg.collegeId?.college || null, // Keep the ID if you need it for filtering/actions
+          points: totalPoints,
+        });
+      }
+
+      // Add SRC entry if exists
+      if (reg.sRCId) {
+        data.push({
+          _id: `${reg._id}_src`,
+          date: reg.createdAt,
+          employee_name: reg.sRCId.name,
+          student_name: reg.name || "N/A",
+          college: collegeName, // ✅ Changed to match dataIndex
+          collegeId: reg.collegeId?.college || null, // Keep the ID if you need it for filtering/actions
+          points: totalPoints,
+        });
+      }
+    });
+
+    // Sort newest first
+    data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    res.json({
+      success: true,
+      data,
+    });
   } catch (error) {
+    console.error("Error in /employee-sales:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
 
 router.put('/update/:id', async (req, res) => {
   try {

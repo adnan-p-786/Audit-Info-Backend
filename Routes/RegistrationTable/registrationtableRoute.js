@@ -4,7 +4,7 @@ const collegeAccounts = require('../../models/College Accounts/collegeAccounts')
 const particularModel = require('../../models/Particulars/particulars')
 const AccountsModel = require('../../models/Accounts/accounts')
 const PointModel = require('../../models/Point/point')
-const ManagerModel = require('../Manager Admin/managerRoute')
+const ManagerModel = require('../../models/Users/Users')
 const LeadModel = require('../../models/lead/lead')
 const router = express.Router()
 
