@@ -113,30 +113,40 @@ router.get('/get', async (req, res) => {
 
 router.get("/employee-sales", async (req, res) => {
   try {
-    // Fetch leads (because you have both leads + registrations)
+    // Fetch all leads
     const leads = await Lead.find()
       .populate("sROId", "name")
       .populate("sRCId", "name")
       .populate("branchId", "branch_name")
       .populate("schoolId", "school_name");
 
-    // Fetch registrations
+    // Fetch all registrations
     const registrations = await Registration.find()
       .populate("sROId", "name")
       .populate("sRCId", "name")
-      .populate("collegeId", "college"); // Populate college info
+      .populate("collegeId", "college"); // includes college name
 
-    // Fetch points for registration-related credits
+    // Fetch all points
     const points = await Point.find();
 
-    // Build table data
     const data = [];
 
-    // 1️⃣ Include all leads - create entries for both SRO and SRC
+    // --------------------------------------------
+    // 1️⃣ PROCESS LEADS (college taken from registration)
+    // --------------------------------------------
     leads.forEach((lead) => {
+      // Find matching registration (same student)
+      const relatedReg = registrations.find(
+        (r) =>
+          r.phone_number === lead.phone_number &&
+          r.name === lead.name
+      );
+
+      const collegeName = relatedReg?.collegeId?.college || "N/A";
+
       const relatedPoints = points.filter(
         (p) =>
-          p.particular?.includes(lead.name) || // sometimes point refers to lead name
+          p.particular?.includes(lead.name) ||
           p.registrationId?.toString() === lead._id.toString()
       );
 
@@ -145,32 +155,34 @@ router.get("/employee-sales", async (req, res) => {
         0
       );
 
-      // Add SRO entry if exists
+      // Add SRO row
       if (lead.sROId) {
         data.push({
           _id: `${lead._id}_sro`,
           date: lead.createdAt,
           employee_name: lead.sROId.name,
-          student_name: lead.name || "N/A",
-          college: "-", // ✅ Changed to match dataIndex
+          student_name: lead.name,
+          college: collegeName,
           points: totalPoints,
         });
       }
 
-      // Add SRC entry if exists
+      // Add SRC row
       if (lead.sRCId) {
         data.push({
           _id: `${lead._id}_src`,
           date: lead.createdAt,
           employee_name: lead.sRCId.name,
-          student_name: lead.name || "N/A",
-          college: "-", // ✅ Changed to match dataIndex
+          student_name: lead.name,
+          college: collegeName,
           points: totalPoints,
         });
       }
     });
 
-    // 2️⃣ Include all registrations - create entries for both SRO and SRC
+    // --------------------------------------------
+    // 2️⃣ PROCESS REGISTRATIONS (already has college)
+    // --------------------------------------------
     registrations.forEach((reg) => {
       const regPoints = points.filter(
         (p) => p.registrationId?.toString() === reg._id.toString()
@@ -181,37 +193,36 @@ router.get("/employee-sales", async (req, res) => {
         0
       );
 
-      // Extract college name
       const collegeName = reg.collegeId?.college || "N/A";
 
-      // Add SRO entry if exists
+      // Add SRO row
       if (reg.sROId) {
         data.push({
           _id: `${reg._id}_sro`,
           date: reg.createdAt,
           employee_name: reg.sROId.name,
-          student_name: reg.name || "N/A",
-          college: collegeName, // ✅ Changed to match dataIndex
-          collegeId: reg.collegeId?.college || null, // Keep the ID if you need it for filtering/actions
+          student_name: reg.name,
+          college: collegeName,
           points: totalPoints,
         });
       }
 
-      // Add SRC entry if exists
+      // Add SRC row
       if (reg.sRCId) {
         data.push({
           _id: `${reg._id}_src`,
           date: reg.createdAt,
           employee_name: reg.sRCId.name,
-          student_name: reg.name || "N/A",
-          college: collegeName, // ✅ Changed to match dataIndex
-          collegeId: reg.collegeId?.college || null, // Keep the ID if you need it for filtering/actions
+          student_name: reg.name,
+          college: collegeName,
           points: totalPoints,
         });
       }
     });
 
-    // Sort newest first
+    // --------------------------------------------
+    // 3️⃣ SORT LATEST FIRST
+    // --------------------------------------------
     data.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     res.json({
@@ -223,6 +234,7 @@ router.get("/employee-sales", async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
 
 router.put('/update/:id', async (req, res) => {
   try {

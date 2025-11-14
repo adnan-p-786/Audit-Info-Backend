@@ -14,7 +14,7 @@ router.post('/signup', async (req, res) => {
             return res.status(400).json({ message: "Name, Email, Password, and Position are required" });
         }
 
-        const allowedPositions = ['SRC', 'SRO', 'Accountant', 'Administrator', 'Manager'];
+        const allowedPositions = ['SRC', 'SRO', 'Accountant', 'Administrator', 'Manager' , 'Admin'];
         if (!allowedPositions.includes(position)) {
             return res.status(400).json({ message: `Position must be one of: ${allowedPositions.join(', ')}` });
         }
@@ -71,9 +71,9 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
-        const {email, password ,position } = req.body;
+        const { email, password, position } = req.body;
 
-        if (!email || !password ||!position) {
+        if (!email || !password || !position) {
             return res.status(400).json({ message: "Email, position and password are required" });
         }
 
@@ -83,28 +83,36 @@ router.post('/login', async (req, res) => {
             return res.status(404).json({ success: false, message: "User does not exist" });
         }
 
+        // Check position matches
+        if (user.position !== position) {
+            return res.status(401).json({ success: false, message: "Position mismatch" });
+        }
+
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ success: false, message: "Invalid Password" });
         }
 
-        const token = jwt.sign({ id: user._id, password: user.position }, process.env.JWT_SECRET);
+        const token = jwt.sign(
+            { id: user._id, role: user.position },
+            process.env.JWT_SECRET
+        );
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             data: {
                 token,
                 id: user._id,
                 Email: user.email,
-                Password: user.password,
                 Position: user.position
             }
         });
 
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        return res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
+
 
 
 router.get('/get', async (req, res) => {
