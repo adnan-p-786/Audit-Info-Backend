@@ -14,7 +14,7 @@ router.post('/signup', async (req, res) => {
             return res.status(400).json({ message: "Name, Email, Password, and Position are required" });
         }
 
-        const allowedPositions = ['SRC', 'SRO', 'Accountant', 'Administrator', 'Manager' , 'Admin'];
+        const allowedPositions = ['SRC', 'SRO', 'Accountant', 'Administractor', 'Manager' , 'Admin'];
         if (!allowedPositions.includes(position)) {
             return res.status(400).json({ message: `Position must be one of: ${allowedPositions.join(', ')}` });
         }
