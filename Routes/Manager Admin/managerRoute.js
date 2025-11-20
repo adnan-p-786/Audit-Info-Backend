@@ -1,5 +1,6 @@
 const express = require('express')
 const managerModel = require('../../models/Users/Users')
+const registerModel = require('../../models/RegistrationTable/registrationTable')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
@@ -49,6 +50,41 @@ router.post('/create', async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 });
+
+
+router.get('/get-branchmanager', async (req, res) => {
+    try {
+        const { branchId } = req.query;   // coming from frontend
+
+        // Find all managers in this branch
+        const managers = await managerModel.find({ 
+            position: "Manager",
+            branchId: branchId
+        });
+
+        const result = [];
+
+        for (const manager of managers) {
+            // Count admissions belonging to this manager
+            const admissionCount = await registerModel.countDocuments({
+                branchId: branchId,
+                managerId: manager._id
+            });
+
+            result.push({
+                name: manager.name,
+                admissionCount,
+            });
+        }
+
+        res.status(200).json(result);
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+
 
 
 router.get('/get', async (req, res) => {

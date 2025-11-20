@@ -105,7 +105,8 @@ router.post('/login', async (req, res) => {
                 id: user._id,
                 Email: user.email,
                 Position: user.position
-            }
+            },
+            message: "Login Successful"
         });
 
     } catch (error) {
