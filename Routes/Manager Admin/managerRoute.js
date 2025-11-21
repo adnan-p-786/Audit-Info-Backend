@@ -1,6 +1,6 @@
 const express = require('express')
 const managerModel = require('../../models/Users/Users')
-const registerModel = require('../../models/RegistrationTable/registrationTable')
+const RegistrationTable = require('../../models/RegistrationTable/registrationTable')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
@@ -8,10 +8,10 @@ const router = express.Router()
 
 router.post('/create', async (req, res) => {
     try {
-        const { name, email,password,phone_number,address,point_amount,employee_code,branchId,salary} = req.body
+        const { name, email, password, phone_number, address, point_amount, employee_code, branchId, salary } = req.body
 
-        if (!name || !email || !password ||!phone_number || !address ||!point_amount || !employee_code || !branchId ||!salary) {
-            return res.status(400).json({ message: "All fields are required"})
+        if (!name || !email || !password || !phone_number || !address || !point_amount || !employee_code || !branchId || !salary) {
+            return res.status(400).json({ message: "All fields are required" })
         }
         const existingUser = await managerModel.findOne({ email });
         if (existingUser) {
@@ -25,7 +25,7 @@ router.post('/create', async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            position:"Manager",
+            position: "Manager",
             employee_code,
             salary,
             phone_number,
@@ -52,36 +52,43 @@ router.post('/create', async (req, res) => {
 });
 
 
-router.get('/get-branchmanager', async (req, res) => {
+router.get('/leaderboard/manager', async (req, res) => {
     try {
-        const { branchId } = req.query;   // coming from frontend
+        const managers = await managerModel.find({ position: 'Manager' });
+        console.log(managers);
 
-        // Find all managers in this branch
-        const managers = await managerModel.find({ 
-            position: "Manager",
-            branchId: branchId
+        const registrationCounts = await RegistrationTable.aggregate([
+            {
+                $group: {
+                    _id: '$branchId',
+                    registrationCount: { $sum: 1 }
+                }
+            }
+        ]);
+
+        console.log(registrationCounts);
+
+        const leaderboard = managers.map(m => {
+            const branchInfo = registrationCounts.find(
+                count => String(count._id) === String(m.branchId)
+            );
+
+            return {
+                managerId: m._id,
+                name: m.name,
+                branchId: m.branchId,
+                registrationCount: branchInfo ? branchInfo.registrationCount : 0
+            };
         });
 
-        const result = [];
+        leaderboard.sort((a, b) => b.registrationCount - a.registrationCount);
 
-        for (const manager of managers) {
-            // Count admissions belonging to this manager
-            const admissionCount = await registerModel.countDocuments({
-                branchId: branchId,
-                managerId: manager._id
-            });
-
-            result.push({
-                name: manager.name,
-                admissionCount,
-            });
-        }
-
-        res.status(200).json(result);
-
+        res.status(200).json(leaderboard);
     } catch (error) {
-        res.status(500).json({ message: "Server error", error });
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
+
 });
 
 
@@ -89,9 +96,9 @@ router.get('/get-branchmanager', async (req, res) => {
 
 router.get('/get', async (req, res) => {
     try {
-        const Src = await managerModel.find({position: "Manager" })
-        .populate('branchId')
-        .populate('srcId')
+        const Src = await managerModel.find({ position: "Manager" })
+            .populate('branchId')
+            .populate('srcId')
         res.status(200).json(Src);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
@@ -110,7 +117,7 @@ router.put('/update/:id', async (req, res) => {
 
 router.delete('/delete/:id', async (req, res) => {
     try {
-        const id = req.params.id; 
+        const id = req.params.id;
         const deleteData = await managerModel.findByIdAndDelete(id);
         if (!deleteData) {
             return res.status(404).json({ message: "Manager not found" });

@@ -1,5 +1,6 @@
 const express = require('express')
 const SrcModel = require('../../models/Users/Users')
+const RegistrationTable = require('../../models/RegistrationTable/registrationTable')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
@@ -7,10 +8,10 @@ const router = express.Router()
 
 router.post('/create', async (req, res) => {
     try {
-        const { name, email, password,phone_number,address,point_amount,status,employee_code,branchId} = req.body
+        const { name, email, password, phone_number, address, point_amount, status, employee_code, branchId } = req.body
 
-        if (!name || !email || !password ||!phone_number || !address ||!point_amount || !status===undefined || !employee_code || !branchId) {
-            return res.status(400).json({ message: "All fields are required"})
+        if (!name || !email || !password || !phone_number || !address || !point_amount || !status === undefined || !employee_code || !branchId) {
+            return res.status(400).json({ message: "All fields are required" })
         }
         const existingUser = await SrcModel.findOne({ email });
         if (existingUser) {
@@ -24,7 +25,7 @@ router.post('/create', async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            position:"SRC",
+            position: "SRC",
             employee_code,
             status,
             phone_number,
@@ -74,7 +75,7 @@ router.put('/update/:id', async (req, res) => {
 
 router.delete('/delete/:id', async (req, res) => {
     try {
-        const id = req.params.id; 
+        const id = req.params.id;
         const deleteData = await SrcModel.findByIdAndDelete(id);
         if (!deleteData) {
             return res.status(404).json({ message: "Src not found" });
@@ -120,5 +121,43 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 });
+
+
+router.get('/leaderboard/src', async (req, res) => {
+  try {
+    const srcList = await SrcModel.find({ position: 'SRC' });
+
+    const registrationCounts = await RegistrationTable.aggregate([
+      {
+        $group: {
+          _id: '$sRCId',
+          registrationCount: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const leaderboard = srcList.map(src => {
+      const info = registrationCounts.find(
+        count => String(count._id) === String(src._id)
+      );
+
+      return {
+        userId: src._id,
+        name: src.name,
+        registrationCount: info ? info.registrationCount : 0
+      };
+    });
+
+    leaderboard.sort((a, b) => b.registrationCount - a.registrationCount);
+
+    res.status(200).json(leaderboard);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+
 
 module.exports = router;

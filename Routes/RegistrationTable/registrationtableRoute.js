@@ -145,75 +145,73 @@ router.post('/register/:id', async (req, res) => {
             return res.status(400).json({ message: "All fields are required" });
         }
 
+        // Fetch Lead
+        const leadId = req.params.id;
+        const lead = await LeadModel.findById(leadId)
+            .populate('sRCId')
+            .populate('sROId')
+            .populate('branchId');
+
+        if (!lead) return res.status(404).json({ message: 'Lead not found' });
+
+        // Use lead.branchId
+        const branchId = lead.branchId;
+
+        // Create registration with AUTO branchId
         const newData = await RegistrationTableModel.create({
             name, schoolId, phone_number, address, collegeId, course,
             total_fee, recived_amount, certificates, comment, commission,
-            booking_amount, agentId, status: "registered"
+            booking_amount, agentId,
+            branchId: branchId,  
+            status: "registered"
         });
 
         // Update lead status
-        const leadId = req.params.id;
-        const updatedLead = await LeadModel.findByIdAndUpdate(
+        await LeadModel.findByIdAndUpdate(
             leadId,
             { status: "Registered" },
             { new: true }
-        ).populate('sRCId').populate('sROId').populate('branchId');
+        );
 
-
-        if (!updatedLead) {
-            return res.status(404).json({ message: 'Lead not found' });
-        }
-
-        // console.log(updatedLead);
-
-        // ✅ Extract values from the lead
-        const { branchId, sRCId, sROId } = updatedLead;
-
-        // Find manager under that branch
-        const manager = await ManagerModel.findOne({ branchId, position: 'Manager' });
-        // console.log('Manager found:', manager);
-
+        // Awarding points (same as before)
         await newData.populate('collegeId');
         const college = newData.collegeId;
-        console.log('College ID:', newData.collegeId);
 
         const pointEntries = [];
+        const manager = await ManagerModel.findOne({ branchId, position: 'Manager' });
 
         if (manager) {
             pointEntries.push({
                 debit: 0,
                 credit: college.bm_point,
                 type: 'credit',
-                particular: `Lead (${name}) registered under branch ${branchId || 'N/A'}`,
+                particular: `Lead (${name}) registered under branch ${branchId._id}`,
                 userId: manager._id,
                 registrationId: newData._id
             });
         }
 
-        // SRC Point
-        if (sRCId && sRCId._id) {
+        if (lead.sRCId) {
             pointEntries.push({
                 debit: 0,
                 credit: college.src_point,
                 type: 'credit',
-                particular: `Lead (${name}) registered by SRC ${sRCId.name}`,
-                userId: sRCId._id,
+                particular: `Lead (${name}) registered by SRC ${lead.sRCId.name}`,
+                userId: lead.sRCId._id,
                 registrationId: newData._id
             });
         }
 
-
-        if (sROId && sROId._id) {
+        if (lead.sROId) {
             pointEntries.push({
                 debit: 0,
                 credit: college.sro_point,
                 type: 'credit',
-                particular: `Lead (${name}) registered by SRO ${sROId.name}`,
-                userId: sROId._id,
+                particular: `Lead (${name}) registered by SRO ${lead.sROId.name}`,
+                userId: lead.sROId._id,
                 registrationId: newData._id
             });
         }
-
 
         if (pointEntries.length > 0) {
             await PointModel.insertMany(pointEntries);
@@ -222,15 +220,15 @@ router.post('/register/:id', async (req, res) => {
         res.status(201).json({
             message: 'Registration created and lead updated successfully',
             registration: newData,
-            lead: updatedLead
+            lead
         });
-
 
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error", error });
     }
 });
+
 
 
 
