@@ -156,13 +156,18 @@ router.post('/register/:id', async (req, res) => {
 
         // Use lead.branchId
         const branchId = lead.branchId;
+        const srcId = lead.sRCId;
+        const sroId = lead.sROId;
+
 
         // Create registration with AUTO branchId
         const newData = await RegistrationTableModel.create({
             name, schoolId, phone_number, address, collegeId, course,
             total_fee, recived_amount, certificates, comment, commission,
             booking_amount, agentId,
-            branchId: branchId,  
+            branchId: branchId,
+            sRCId: srcId,
+            sROId: sroId,
             status: "registered"
         });
 

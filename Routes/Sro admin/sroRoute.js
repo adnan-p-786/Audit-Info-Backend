@@ -1,5 +1,6 @@
 const express = require('express')
 const SroModel = require('../../models/Users/Users')
+const RegistrationTable = require('../../models/RegistrationTable/registrationTable')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
@@ -120,6 +121,41 @@ router.post('/login', async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
+});
+
+router.get('/leaderboard/sro', async (req, res) => {
+  try {
+    const sroList = await SroModel.find({ position: 'SRO' });
+
+    const registrationCounts = await RegistrationTable.aggregate([
+      {
+        $group: {
+          _id: '$sROId',
+          registrationCount: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const leaderboard = sroList.map(sro => {
+      const info = registrationCounts.find(
+        count => String(count._id) === String(sro._id)
+      );
+
+      return {
+        userId: sro._id,
+        name: sro.name,
+        registrationCount: info ? info.registrationCount : 0
+      };
+    });
+
+    leaderboard.sort((a, b) => b.registrationCount - a.registrationCount);
+
+    res.status(200).json(leaderboard);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
 module.exports = router;

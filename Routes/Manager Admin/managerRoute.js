@@ -55,7 +55,7 @@ router.post('/create', async (req, res) => {
 router.get('/leaderboard/manager', async (req, res) => {
     try {
         const managers = await managerModel.find({ position: 'Manager' });
-        console.log(managers);
+        // console.log(managers);
 
         const registrationCounts = await RegistrationTable.aggregate([
             {
@@ -66,7 +66,7 @@ router.get('/leaderboard/manager', async (req, res) => {
             }
         ]);
 
-        console.log(registrationCounts);
+        // console.log(registrationCounts);
 
         const leaderboard = managers.map(m => {
             const branchInfo = registrationCounts.find(
@@ -80,6 +80,7 @@ router.get('/leaderboard/manager', async (req, res) => {
                 registrationCount: branchInfo ? branchInfo.registrationCount : 0
             };
         });
+        // console.log(leaderboard);
 
         leaderboard.sort((a, b) => b.registrationCount - a.registrationCount);
 
