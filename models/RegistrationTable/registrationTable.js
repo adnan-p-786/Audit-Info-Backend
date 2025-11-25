@@ -4,10 +4,6 @@ const RegistrationTableSchema = new mongoose.Schema({
     name: {
         type: String,
     },
-    agentId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Agent"
-    },
     schoolId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "SchoolManagement",

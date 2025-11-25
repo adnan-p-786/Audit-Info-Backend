@@ -119,10 +119,10 @@ router.put('/updateregister/:id', async (req, res) => {
 
 router.post('/create', async (req, res) => {
     try {
-        const { name, schoolId, phone_number, address, collegeId, course, total_fee, recived_amount, certificates, comment, commission, booking_amount, agentId } = req.body
-        if (!name || !schoolId || !phone_number || !address || !collegeId || !course || !total_fee || !recived_amount || !certificates || !comment || !commission || !booking_amount || !agentId)
+        const { name, schoolId, phone_number, address, collegeId, course, total_fee, recived_amount, certificates, comment, commission, booking_amount } = req.body
+        if (!name || !schoolId || !phone_number || !address || !collegeId || !course || !total_fee || !recived_amount || !certificates || !comment || !commission || !booking_amount)
             return res.status(400).json({ message: "all fields are required" })
-        const newData = await RegistrationTableModel.create({ name, schoolId, phone_number, address, collegeId, course, total_fee, recived_amount, certificates, comment, commission, booking_amount, agentId, status: "registered" })
+        const newData = await RegistrationTableModel.create({ name, schoolId, phone_number, address, collegeId, course, total_fee, recived_amount, certificates, comment, commission, booking_amount, status: "registered" })
         res.status(201).json(newData)
     } catch (error) {
         res.status(400).json(error)
@@ -235,10 +235,6 @@ router.post('/register/:id', async (req, res) => {
 });
 
 
-
-
-
-
 router.get('/get', async (req, res) => {
     try {
         const data = await RegistrationTableModel.find()
@@ -247,7 +243,6 @@ router.get('/get', async (req, res) => {
             .populate('sRCId')
             .populate('collegeId')
             .populate('branchId')
-            .populate('agentId')
         res.status(200).json(data);
     } catch (error) {
         res.status(400).json(error);
