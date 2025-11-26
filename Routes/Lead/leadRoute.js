@@ -7,6 +7,8 @@ const Point = require("../../models/Point/point");
 const router = express.Router()
 const xlsx = require('xlsx');
 const mongoose = require('mongoose');
+const multer = require("multer");
+const upload = multer();
 
 
 router.post('/create', async (req, res) => {
@@ -29,48 +31,55 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// router.post("/uploadEXCEL", async (c) => {
-//   try {
-//     const formData = await c.req.formData();
-//     const file = formData.get("file");
-//     const buffer = Buffer.from(await file.arrayBuffer());
 
-//     const xlfile = xlsx.read(buffer);
-//     let xldata = [];
+router.post("/uploadEXCEL", upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
 
-//     const sheets = xlfile.SheetNames;
+    const buffer = req.file.buffer;
+    const xlfile = xlsx.read(buffer);
+    let xldata = [];
 
-//     for (let i = 0; i < sheets.length; i++) {
-//       const temp = xlsx.utils.sheet_to_json(xlfile.Sheets[sheets[i]]);
-//       temp.forEach((res) => {
-//         // Optional: Transform input if necessary
-//         // For example: Convert date strings to Date objects, etc.
-//         xldata.push({
-//           name: res.name,
-//           phone_number: res.phone_number,
-//           date_of_joining: new Date(res.date_of_joining),
-//           status: res.status || 'pending',
-//           delete: res.delete === 'true' || res.delete === true, // ensure Boolean
-//           address: res.address,
-//           mark: Number(res.mark),
-//           subject_name: res.subject_name,
-//           course: res.course,
-//           sRCId: res.sRCId ? new mongoose.Types.ObjectId(res.sRCId) : undefined,
-//           sROId: res.sROId ? new mongoose.Types.ObjectId(res.sROId) : undefined,
-//           branchId: new mongoose.Types.ObjectId(res.branchId),
-//           schoolId: new mongoose.Types.ObjectId(res.schoolId),
-//         });
-//       });
-//     }
+    const sheets = xlfile.SheetNames;
 
-//     const result = await Lead.insertMany(xldata);
+    for (let i = 0; i < sheets.length; i++) {
+      const temp = xlsx.utils.sheet_to_json(xlfile.Sheets[sheets[i]]);
 
-//     return c.json({ success: true, inserted: result.length, data: result });
-//   } catch (error) {
-//     console.error(error);
-//     return c.json({ error: error.message }, 400);
-//   }
-// });
+      temp.forEach((row) => {
+        xldata.push({
+          name: row.name,
+          phone_number: row.phone_number,
+          date_of_joining: row.date_of_joining ? new Date(row.date_of_joining) : null,
+          status: row.status || "pending",
+          delete: row.delete === "true" || row.delete === true,
+          address: row.address,
+          mark: Number(row.mark),
+          subject_name: row.subject_name,
+          course: row.course,
+          sRCId: row.sRCId ? new mongoose.Types.ObjectId(row.sRCId) : undefined,
+          sROId: row.sROId ? new mongoose.Types.ObjectId(row.sROId) : undefined,
+          branchId: new mongoose.Types.ObjectId(row.branchId),
+          schoolId: new mongoose.Types.ObjectId(row.schoolId),
+        });
+      });
+    }
+
+    const result = await LeadModel.insertMany(xldata);
+
+    return res.json({
+      success: true,
+      inserted: result.length,
+      data: result,
+    });
+
+  } catch (error) {
+    console.error("Upload Error:", error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 
 
 
