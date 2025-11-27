@@ -12,6 +12,7 @@ app.use(express.json())
 app.use(cors({
     origin:[
         'http://localhost:5173',
+        // 'http://192.168.199.126:5173'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 }));
@@ -54,7 +55,13 @@ app.use('/api/images', express.static('upload/images'));
 app.get('/', (req, res) => {
     res.send('Hello World!')
 })
+
 connectDB()
+
 app.listen(port, () => {
     console.log(`app listening on port ${port}`)
 }) 
+
+// app.listen(port, '0.0.0.0', () => {
+//     console.log(`Server running on http://192.168.199.126:${port}`);
+// });
