@@ -15,13 +15,13 @@ router.post('/create', async (req, res) => {
   try {
     const { name, phone_number, address, mark, subject_name, course, sRCId, sROId, branchId, schoolId, comment } = req.body;
 
-    if (!name || !phone_number || !mark || !subject_name || !course || !address || !branchId || !schoolId ||!sRCId || !sROId || !comment) {
+    if (!name || !phone_number || !mark || !subject_name || !course || !address || !branchId || !schoolId || !sRCId || !sROId || !comment) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     const newLead = await LeadModel.create({
       name, phone_number, comment, address,
-      mark, subject_name, course, branchId, schoolId, sRCId, sROId,status: 'Not Registered'
+      mark, subject_name, course, branchId, schoolId, sRCId, sROId, status: 'Not Registered'
     });
 
     res.status(201).json(newLead);
@@ -51,17 +51,17 @@ router.post("/uploadEXCEL", upload.single("file"), async (req, res) => {
         xldata.push({
           name: row.name,
           phone_number: row.phone_number,
-          date_of_joining: row.date_of_joining ? new Date(row.date_of_joining) : null,
-          status: row.status || "pending",
+          status: row.status || "pending by excel",
           delete: row.delete === "true" || row.delete === true,
           address: row.address,
           mark: Number(row.mark),
           subject_name: row.subject_name,
           course: row.course,
-          sRCId: row.sRCId ? new mongoose.Types.ObjectId(row.sRCId) : undefined,
-          sROId: row.sROId ? new mongoose.Types.ObjectId(row.sROId) : undefined,
+          sRCId: new mongoose.Types.ObjectId(row.sRCId),
+          sROId: new mongoose.Types.ObjectId(row.sROId),
           branchId: new mongoose.Types.ObjectId(row.branchId),
           schoolId: new mongoose.Types.ObjectId(row.schoolId),
+          comment: row.comment || "added by Excel",
         });
       });
     }

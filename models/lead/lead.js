@@ -35,12 +35,14 @@ const LeadSchema = new mongoose.Schema({
     sRCId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true,
+        required: false
+
     },
     sROId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true,
+        required: false
+
     },
     branchId: {
         type: mongoose.Schema.Types.ObjectId,
