@@ -114,6 +114,56 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.post("/logout", (req, res) => {
+  return res.json({
+    success: true,
+    message: "Logged out successfully",
+  });
+});
+
+
+router.put('/update-password', async (req, res) => {
+    try {
+        const { email, currentPassword, newPassword } = req.body;
+
+        if (!email || !currentPassword || !newPassword) {
+            return res.status(400).json({ message: "Email, current password, and new password are required" });
+        }
+
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User does not exist" });
+        }
+
+        // Allow ONLY Admin to update password
+        if (user.position !== "Admin") {
+            return res.status(403).json({ success: false, message: "Access denied. Only Admin can update password." });
+        }
+
+        // Check current password
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: "Current password is incorrect" });
+        }
+
+        // Hash new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update password
+        user.password = hashedPassword;
+        await user.save();
+
+        return res.status(200).json({ 
+            success: true, 
+            message: "Password updated successfully" 
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
 
 
 router.get('/get', async (req, res) => {
